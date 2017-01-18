@@ -35,10 +35,10 @@ class user {
         $result = mysqli_query($this->db, $sql);
 
         while ($rows = mysqli_fetch_array($result)) {
-            $this->data[] = $rows;
+            $this->dataSelect[] = $rows;
         }
 
-        return $this->data;
+        return $this->dataSelect;
     }
 
     public function reg_user($name, $username, $password, $email) {
@@ -96,20 +96,22 @@ class user {
 
     public function update_user($uid, $name, $username, $password, $email) {
 
-        //$password = md5($password);
-        //$sql="SELECT * FROM users WHERE uname='$username' OR uemail='$email'";
+        $password = md5($password);
+        $sql="SELECT * FROM users WHERE (uname='$username' OR uemail='$email') AND uid != '$uid'"; 
         //checking if the username or email is available in db
-        //$check =  $this->db->query($sql) ;
-        //$count_row = $check->num_rows;
+        $check =  $this->db->query($sql) ;
+        $count_row = $check->num_rows;
         //if the username is not in db then insert to the table
-        //if ($count_row == 0){
+        if ($count_row == 0){
         $sql1 = "UPDATE users SET uname='$username', upass='$password', fullname='$name', uemail='$email'
 						WHERE uid='$uid'";
         $result = mysqli_query($this->db, $sql1) or die(mysqli_connect_errno() . "Data cannot updates");
         return $result;
-        //}
-        //else { return false;}
-        //test 001
+        }
+        else { 
+            return false;
+            
+        }
     }
 
 }
