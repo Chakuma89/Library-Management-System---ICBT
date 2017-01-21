@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>              
+<html>    
     <!-------------------------Header Plugins ----------------------------->
     <?php include_once 'header_includes.php'; ?>
     <!-------------------------Header Plugins ----------------------------->

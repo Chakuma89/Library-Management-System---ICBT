@@ -14,7 +14,7 @@ if (isset($_POST['login'])) {
     if ($login) {
         header("location:books.php");
     } else {
-        $error = 'Incorrect UserName or Password';
+        $error = 'Incorrect Email/Username or Password';
     }
 }
 if (isset($_GET['logout'])) {
@@ -62,7 +62,7 @@ if (isset($_GET['logout'])) {
                 <!-- <form action="index.html" method="post"> -->
                 <form method="post" id="login-form"> 
                     <div class="form-group has-feedback">
-                        <input type="text" name="email" class="form-control" placeholder="Email">
+                        <input type="text" name="email" class="form-control" placeholder="Email/Username">
                         <span class="glyphicon glyphicon-envelope form-control-feedback"></span> 
                     </div>
                     <div class="form-group has-feedback">
