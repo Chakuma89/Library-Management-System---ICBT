@@ -53,6 +53,30 @@ class book {
         return $this->dataCat;
     }
 
+    public function showLanguages() {
+
+        $sqlLang = "SELECT * FROM languages";
+        $resultLang = mysqli_query($this->db, $sqlLang);
+
+        while ($rowsLang = mysqli_fetch_array($resultLang)) {
+            $this->dataLang[] = $rowsLang; 
+        }
+
+        return $this->dataLang;
+    }
+
+    public function showTypes() {
+
+        $sqlType = "SELECT * FROM types";
+        $resultType = mysqli_query($this->db, $sqlType);
+
+        while ($rowsType = mysqli_fetch_array($resultType)) {
+            $this->dataType[] = $rowsType; 
+        }
+
+        return $this->dataType;  
+    }
+
     public function addBooks($bookCode, $bookName, $bookAuthor, $bookQuantity, $bookLanguage, $bookType, $bookStream, $bookCategory) {
 
         $sql = "SELECT * FROM books WHERE book_name='$bookName'";
@@ -82,7 +106,7 @@ class book {
         return $this->data;
     }
 
-    public function getBookById($id) {      
+    public function getBookById($id) {
 
         $sql = "SELECT * FROM books WHERE book_id='$id'";
         $result = mysqli_query($this->db, $sql);
@@ -93,23 +117,23 @@ class book {
 
         return $this->dataSelect;
     }
-    
-        public function updateBook($uid, $bookCode, $bookName, $bookAuthor, $bookQuantity, $bookLanguage, $bookType, $bookStream, $bookCategory) {
 
-        $sql = "SELECT * FROM books WHERE category_name='$bookName' AND book_id != '$uid'";  
+    public function updateBook($uid, $bookCode, $bookName, $bookAuthor, $bookQuantity, $bookLanguage, $bookType, $bookStream, $bookCategory) {
+
+        $sql = "SELECT * FROM books WHERE book_name='$bookName' AND book_id != '$uid'";
         $check = $this->db->query($sql);
         $count_row = $check->num_rows;
 
-        //if the data is not in db then insert to the table  
+        //if the data is not in db then insert to the table   
         if ($count_row == 0) {
-            $sql1 = "UPDATE books SET book_code='$bookCode', book_name='$bookName', author='$bookAuthor', quantity='$bookQuantity', language='$bookLanguage', type='$bookType', stream='$bookStream', category='$bookCategory' WHERE category_id='$uid'";
+            $sql1 = "UPDATE books SET book_code='$bookCode', book_name='$bookName', author='$bookAuthor', quantity='$bookQuantity', language='$bookLanguage', type='$bookType', stream='$bookStream', category='$bookCategory' WHERE book_id='$uid'";
             $result = mysqli_query($this->db, $sql1) or die(mysqli_connect_errno() . "Data cannot updates");
             return $result;
         } else {
             return false;
         }
     }
-    
+
     public function delete($id) {
 
         $sql = "DELETE FROM books WHERE book_id='$id'";
@@ -153,6 +177,24 @@ class book {
         $rows = mysqli_fetch_array($result);
         $categoryName = $rows['category_name'];
         return $categoryName;
+    }
+    
+    public function getCategoryLanguageById($id) {
+
+        $sql = "SELECT * FROM languages WHERE language_id='$id'";
+        $result = mysqli_query($this->db, $sql);
+        $rows = mysqli_fetch_array($result);
+        $languageName = $rows['language'];
+        return $languageName;
+    }
+    
+    public function getCategoryTypeById($id) {
+
+        $sql = "SELECT * FROM types WHERE type_id='$id'";
+        $result = mysqli_query($this->db, $sql);
+        $rows = mysqli_fetch_array($result);
+        $typeName = $rows['type_name'];
+        return $typeName;
     }
 
 }
