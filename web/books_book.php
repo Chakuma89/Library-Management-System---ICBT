@@ -15,9 +15,9 @@
             <?php
             include_once '../controllers/class.book.php';
             $book = new book();
-            
+
             if (isset($_POST['save'])) {
-                $bookCode = $_POST['book_code']; 
+                $bookCode = $_POST['book_code'];
                 $bookName = $_POST['book_name'];
                 $bookAuthor = $_POST['book_author'];
                 $bookQuantity = $_POST['book_quantity'];
@@ -28,22 +28,48 @@
                 $addBook = $book->addBooks($bookCode, $bookName, $bookAuthor, $bookQuantity, $bookLanguage, $bookType, $bookStream, $bookCategory);
                 if ($addBook) {
                     // Registration Success
-                    $success = 'Book details have been successfully added'; 
+                    $success = 'Book details have been successfully added';
                 } else {
                     // Registration Failed
                     $error = 'Failed! Book details already exits, please try again';
                 }
             }
-            
+
+
+
             if (isset($_GET['deleteid'])) {
                 $uid = $_GET['deleteid'];
                 $delete = $book->delete($uid);
-            } 
-            
+            }
+
             if (isset($_GET['editid'])) {
+                $ueditId = $_GET['editid'];
+                foreach ($book->getBookById($ueditId) as $val) {
+                    extract($val);
+                    $uid = $book_id;
+                    $bookCode = $book_code;
+                    $bookName = $book_name;
+                    $bookAuthorId = $author;
+                    $bookQuantity = $quantity;
+                    $bookLanguageId = $language;
+                    $bookTypeId = $type;
+                    $bookStreamId = $stream;
+                    $bookCategoryId = $category;
+
+                    $edit_tag = 1;
+                }
+
+                //$bookCode = $addBook = $book->getBookCode();
                 $edit_tag = 1;
             } else {
-                $bookCode = $addBook = $book->getBookCode(); 
+                $bookCode = $addBook = $book->getBookCode();
+                $bookName = '';
+                $bookAuthorId = '';
+                $bookQuantity = '';
+                $bookLanguageId = '';
+                $bookTypeId = '';
+                $bookStreamId = '';
+                $bookCategoryId = '';
                 $edit_tag = 0;
             }
             ?>
@@ -92,7 +118,7 @@
                                             <label for="b_name" class="col-sm-3 control-label">Book Name</label>
 
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control" required id="book_name" name="book_name" placeholder="Book Name">
+                                                <input type="text" class="form-control" required id="book_name" name="book_name" value="<?php echo $bookName; ?>" placeholder="Book Name">
                                             </div>
                                         </div>
 
@@ -107,7 +133,11 @@
                                                     foreach ($book->showAuthors() as $val) {
                                                         extract($val);
                                                         ?>
-                                                        <option value="<?php echo $author_id; ?>"><?php echo $author_name; ?></option>  
+                                                        <?php if ($bookAuthorId == $author_id) { ?>
+                                                            <option selected value="<?php echo $author_id; ?>"><?php echo $author_name; ?></option> 
+                                                        <?php } else { ?>     
+                                                            <option value="<?php echo $author_id; ?>"><?php echo $author_name; ?></option>  
+                                                        <?php } ?>
                                                     <?php } ?>
                                                 </select>
                                             </div>
@@ -117,7 +147,7 @@
                                             <label for="b_qty" class="col-sm-3 control-label" >Quantity</label>
 
                                             <div class="col-sm-9">
-                                                <input type="number" class="form-control" id="book_quantity" required name="book_quantity" placeholder="Quantity">
+                                                <input type="number" class="form-control" id="book_quantity" required name="book_quantity" value="<?php echo $bookQuantity; ?>" placeholder="Quantity">
                                             </div>
                                         </div>
 
@@ -160,7 +190,11 @@
                                                     foreach ($book->showStreams() as $val) {
                                                         extract($val);
                                                         ?>
-                                                        <option value="<?php echo $stream_id; ?>"><?php echo $stream_name; ?></option>
+                                                        <?php if ($bookStreamId == $stream_id) { ?>
+                                                            <option selected="" value="<?php echo $stream_id; ?>"><?php echo $stream_name; ?></option>
+                                                        <?php } else { ?>
+                                                            <option value="<?php echo $stream_id; ?>"><?php echo $stream_name; ?></option>
+                                                        <?php } ?>
                                                     <?php } ?>
                                                 </select>
                                             </div>
@@ -176,7 +210,12 @@
                                                     foreach ($book->showCategories() as $val) {
                                                         extract($val);
                                                         ?>
-                                                        <option value="<?php echo $category_id; ?>"><?php echo $category_name; ?></option>
+                                                        <?php if ($bookCategoryId == $category_id) { ?>
+                                                            <option selected="" value="<?php echo $category_id; ?>"><?php echo $category_name; ?></option>
+                                                        <?php } else { ?>
+                                                            <option value="<?php echo $category_id; ?>"><?php echo $category_name; ?></option>
+                                                        <?php } ?>
+
                                                     <?php } ?>
                                                 </select>
                                             </div>
@@ -212,7 +251,30 @@
                             </div>
                             <!-- /.box -->
                         </div>
-                        
+                        <?php
+                        if (isset($_POST['Update'])) {
+                            $uid = strip_tags($_POST['uid']);
+                            $bookCode = $_POST['book_code'];
+                            $bookName = $_POST['book_name'];
+                            $bookAuthor = $_POST['book_author'];
+                            $bookQuantity = $_POST['book_quantity'];
+                            $bookLanguage = $_POST['book_language'];
+                            $bookType = $_POST['book_type'];
+                            $bookStream = $_POST['book_stream'];
+                            $bookCategory = $_POST['book_category'];
+                            $updateBook = $book->updateBook($uid, $bookCode, $bookName, $bookAuthor, $bookQuantity, $bookLanguage, $bookType, $bookStream, $bookCategory);
+
+                            if ($updateBook) {
+                                // Registration Success
+                                $success = 'Book details have been successfully updated';
+                            } else {
+                                // Registration Failed
+                                $error = 'Book Failed. Book details already exits, please try again';
+                            }
+                        }   
+                        ?>
+
+
                         <div class="col-md-12">
                             <div class="box">
                                 <div class="box-header with-border">
@@ -232,19 +294,24 @@
                                             <th>Category</th>
                                             <th></th>
                                         </tr>
-                                        
+
                                         <?php
                                         foreach ($book->showBooks("books") as $val) {
                                             extract($val);
-                                            $authorName = $book->getAuthorNameById($author); 
-                                            $streamName = $book->getStreamNameById($stream); 
-                                            $categoryName = $book->getCategoryNameById($category);   
-                                            if($type==1){ $typeName = 'Only 2 days';}
-                                            elseif ($type==2) {$typeName = 'Only 3 days';}
-                                            elseif ($type==3) {$typeName = 'Only 5 days';}
-                                            elseif ($type==4) {$typeName = 'Only 5 days';}
-                                            else {$typeName ='Only for reading at library';} 
-                                              
+                                            $authorName = $book->getAuthorNameById($author);
+                                            $streamName = $book->getStreamNameById($stream);
+                                            $categoryName = $book->getCategoryNameById($category);
+                                            if ($type == 1) {
+                                                $typeName = 'Only 2 days';
+                                            } elseif ($type == 2) {
+                                                $typeName = 'Only 3 days';
+                                            } elseif ($type == 3) {
+                                                $typeName = 'Only 5 days';
+                                            } elseif ($type == 4) {
+                                                $typeName = 'Only 5 days';
+                                            } else {
+                                                $typeName = 'Only for reading at library';
+                                            }
                                             ?>
                                             <tr>
                                                 <td scope="row"><?php echo $book_code; ?></td>
@@ -314,11 +381,11 @@
         <script src="js/jquery-ui.min.js.js"></script>
         <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
         <script>
-                                                $.widget.bridge('uibutton', $.ui.button);
-                                                $(function() {
-                                                    //Initialize Select2 Elements
-                                                    $(".select2").select2();
-                                                });
+                                                        $.widget.bridge('uibutton', $.ui.button);
+                                                        $(function() {
+                                                            //Initialize Select2 Elements
+                                                            $(".select2").select2();
+                                                        });
         </script>
         <!-- Bootstrap 3.3.6 -->
         <script src="bootstrap/js/bootstrap.min.js"></script>
