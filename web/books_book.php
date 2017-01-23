@@ -35,6 +35,26 @@
                 }
             }
 
+            if (isset($_POST['Update'])) {
+                $uid = strip_tags($_POST['uid']);
+                $bookCode = $_POST['book_code'];
+                $bookName = $_POST['book_name'];
+                $bookAuthor = $_POST['book_author'];
+                $bookQuantity = $_POST['book_quantity'];
+                $bookLanguage = $_POST['book_language'];
+                $bookType = $_POST['book_type'];
+                $bookStream = $_POST['book_stream'];
+                $bookCategory = $_POST['book_category'];
+                $updateBook = $book->updateBook($uid, $bookCode, $bookName, $bookAuthor, $bookQuantity, $bookLanguage, $bookType, $bookStream, $bookCategory);
+
+                if ($updateBook) {
+                    // Registration Success
+                    $success = 'Book details have been successfully updated';
+                } else {
+                    // Registration Failed
+                    $error = 'Book Failed. Book details already exits, please try again';
+                }
+            }
 
 
             if (isset($_GET['deleteid'])) {
@@ -155,13 +175,18 @@
                                             <label for="b_language" class="col-sm-3 control-label">Language</label>
 
                                             <div class="col-sm-9">
-                                                <select class="form-control" required id="book_language" name="book_language">
+                                                <select class="form-control select2 select2-hidden-accessible" required id="book_language" name="book_language" style="width: 100%;" tabindex="-1" aria-hidden="true">
                                                     <option value="">- Select Language -</option>
-                                                    <option value="Sinhala">Sinhala</option>
-                                                    <option value="English">English</option>
-                                                    <option value="Tamil">Tamil</option>
-                                                    <option value="Spanish">Spanish</option>
-                                                    <option value="Japanese">Japanese</option>  
+                                                    <?php
+                                                    foreach ($book->showLanguages() as $val) {
+                                                        extract($val);
+                                                        ?>
+                                                        <?php if ($bookAuthorId == $author_id) { ?>
+                                                            <option selected value="<?php echo $language_id; ?>"><?php echo $language; ?></option> 
+                                                        <?php } else { ?>     
+                                                            <option value="<?php echo $language_id; ?>"><?php echo $language; ?></option>  
+                                                        <?php } ?>
+                                                    <?php } ?>
                                                 </select>
                                             </div>
                                         </div>
@@ -170,13 +195,19 @@
                                             <label for="b_type" class="col-sm-3 control-label">Type</label>
 
                                             <div class="col-sm-9" >
-                                                <select class="form-control" required id="book_type" name="book_type">
+        
+                                                <select class="form-control select2 select2-hidden-accessible" required id="book_type" name="book_type" style="width: 100%;" tabindex="-1" aria-hidden="true">
                                                     <option value="">- Select Type -</option>
-                                                    <option value="1">Only 2 days</option>
-                                                    <option value="2">Only 3 days</option>
-                                                    <option value="3">Only 5 days</option>
-                                                    <option value="4">Only 7 days</option>
-                                                    <option value="5">Only for reading at library</option>
+                                                    <?php
+                                                    foreach ($book->showTypes() as $val) {
+                                                        extract($val);
+                                                        ?>
+                                                        <?php if ($bookTypeId == $type_id) { ?>
+                                                            <option selected value="<?php echo $type_id; ?>"><?php echo $type_name; ?></option> 
+                                                        <?php } else { ?>     
+                                                            <option value="<?php echo $type_id; ?>"><?php echo $type_name; ?></option>  
+                                                        <?php } ?>
+                                                    <?php } ?>
                                                 </select>
                                             </div>
                                         </div>
@@ -252,26 +283,6 @@
                             <!-- /.box -->
                         </div>
                         <?php
-                        if (isset($_POST['Update'])) {
-                            $uid = strip_tags($_POST['uid']);
-                            $bookCode = $_POST['book_code'];
-                            $bookName = $_POST['book_name'];
-                            $bookAuthor = $_POST['book_author'];
-                            $bookQuantity = $_POST['book_quantity'];
-                            $bookLanguage = $_POST['book_language'];
-                            $bookType = $_POST['book_type'];
-                            $bookStream = $_POST['book_stream'];
-                            $bookCategory = $_POST['book_category'];
-                            $updateBook = $book->updateBook($uid, $bookCode, $bookName, $bookAuthor, $bookQuantity, $bookLanguage, $bookType, $bookStream, $bookCategory);
-
-                            if ($updateBook) {
-                                // Registration Success
-                                $success = 'Book details have been successfully updated';
-                            } else {
-                                // Registration Failed
-                                $error = 'Book Failed. Book details already exits, please try again';
-                            }
-                        }   
                         ?>
 
 
@@ -301,6 +312,8 @@
                                             $authorName = $book->getAuthorNameById($author);
                                             $streamName = $book->getStreamNameById($stream);
                                             $categoryName = $book->getCategoryNameById($category);
+                                            $languageName = $book->getCategoryLanguageById($language);
+                                            $typeName = $book->getCategoryTypeById($type);
                                             if ($type == 1) {
                                                 $typeName = 'Only 2 days';
                                             } elseif ($type == 2) {
@@ -318,7 +331,7 @@
                                                 <td><?php echo $book_name; ?></td>  
                                                 <td><?php echo $authorName; ?></td>
                                                 <td><?php echo $quantity; ?></td>
-                                                <td><?php echo $language; ?></td>
+                                                <td><?php echo $languageName; ?></td>
                                                 <td><?php echo $typeName; ?></td>
                                                 <td><?php echo $streamName; ?></td> 
                                                 <td><?php echo $categoryName; ?></td>    
@@ -381,11 +394,11 @@
         <script src="js/jquery-ui.min.js.js"></script>
         <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
         <script>
-                                                        $.widget.bridge('uibutton', $.ui.button);
-                                                        $(function() {
-                                                            //Initialize Select2 Elements
-                                                            $(".select2").select2();
-                                                        });
+                                                    $.widget.bridge('uibutton', $.ui.button);
+                                                    $(function() {
+                                                        //Initialize Select2 Elements
+                                                        $(".select2").select2();
+                                                    });
         </script>
         <!-- Bootstrap 3.3.6 -->
         <script src="bootstrap/js/bootstrap.min.js"></script>
