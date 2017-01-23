@@ -82,6 +82,34 @@ class book {
         return $this->data;
     }
 
+    public function getBookById($id) {      
+
+        $sql = "SELECT * FROM books WHERE book_id='$id'";
+        $result = mysqli_query($this->db, $sql);
+
+        while ($rows = mysqli_fetch_array($result)) {
+            $this->dataSelect[] = $rows;
+        }
+
+        return $this->dataSelect;
+    }
+    
+        public function updateBook($uid, $bookCode, $bookName, $bookAuthor, $bookQuantity, $bookLanguage, $bookType, $bookStream, $bookCategory) {
+
+        $sql = "SELECT * FROM books WHERE category_name='$bookName' AND book_id != '$uid'";  
+        $check = $this->db->query($sql);
+        $count_row = $check->num_rows;
+
+        //if the data is not in db then insert to the table  
+        if ($count_row == 0) {
+            $sql1 = "UPDATE books SET book_code='$bookCode', book_name='$bookName', author='$bookAuthor', quantity='$bookQuantity', language='$bookLanguage', type='$bookType', stream='$bookStream', category='$bookCategory' WHERE category_id='$uid'";
+            $result = mysqli_query($this->db, $sql1) or die(mysqli_connect_errno() . "Data cannot updates");
+            return $result;
+        } else {
+            return false;
+        }
+    }
+    
     public function delete($id) {
 
         $sql = "DELETE FROM books WHERE book_id='$id'";
@@ -99,31 +127,31 @@ class book {
         $bookCode = 'BOC' . sprintf("%04d", $rows['book_id']);
         return $bookCode;
     }
-    
+
     public function getAuthorNameById($id) {
 
         $sql = "SELECT * FROM authors WHERE author_id='$id'";
         $result = mysqli_query($this->db, $sql);
         $rows = mysqli_fetch_array($result);
-        $authorName = $rows['author_name'];        
+        $authorName = $rows['author_name'];
         return $authorName;
     }
-    
+
     public function getStreamNameById($id) {
 
         $sql = "SELECT * FROM book_streams WHERE stream_id='$id'";
         $result = mysqli_query($this->db, $sql);
         $rows = mysqli_fetch_array($result);
-        $streamName = $rows['stream_name'];        
+        $streamName = $rows['stream_name'];
         return $streamName;
     }
-    
+
     public function getCategoryNameById($id) {
 
         $sql = "SELECT * FROM book_categories WHERE category_id='$id'";
         $result = mysqli_query($this->db, $sql);
         $rows = mysqli_fetch_array($result);
-        $categoryName = $rows['category_name'];        
+        $categoryName = $rows['category_name'];
         return $categoryName;
     }
 
