@@ -62,11 +62,11 @@ if (isset($_GET['logout'])) {
                 <!-- <form action="index.html" method="post"> -->
                 <form method="post" id="login-form"> 
                     <div class="form-group has-feedback">
-                        <input type="text" name="email" class="form-control" placeholder="Email/Username">
+                        <input type="text" name="email" required class="form-control" placeholder="Email/Username">
                         <span class="glyphicon glyphicon-envelope form-control-feedback"></span> 
                     </div>
                     <div class="form-group has-feedback">
-                        <input type="password" name="password" class="form-control" placeholder="Password">
+                        <input type="password" name="password" required class="form-control" placeholder="Password">
                         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                     </div>
 

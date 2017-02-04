@@ -239,7 +239,7 @@ if (!isset($_SESSION['uid'])) {
                 <li class="dropdown user user-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <img src="img/user2-160x160.jpg" class="user-image" alt="User Image">
-                        <span class="hidden-xs"><?php echo $_SESSION['uid']; ?></span>
+                        <span class="hidden-xs"><?php echo $_SESSION['uname']; ?></span>
                     </a>
                     <ul class="dropdown-menu">
                         <!-- User image -->
@@ -247,7 +247,7 @@ if (!isset($_SESSION['uid'])) {
                             <img src="img/user2-160x160.jpg" class="img-circle" alt="User Image">
 
                             <p>
-                                <?php echo $_SESSION['uid']; ?> 
+                                <?php echo $_SESSION['uname']; ?> 
                             </p>
                         </li>
                         <!-- Menu Body -->
@@ -286,7 +286,7 @@ if (!isset($_SESSION['uid'])) {
                 <img src="img/user2-160x160.jpg" class="img-circle" alt="User Image">
             </div>
             <div class="pull-left info">
-                <p><?php echo $_SESSION['uid']; ?></p>
+                <p><?php echo $_SESSION['uname']; ?></p>
                 <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
         </div>
@@ -318,7 +318,7 @@ if (!isset($_SESSION['uid'])) {
                     </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="students.html"><i class="fa fa-circle-o"></i> Student Registration</a></li>
+                    <li><a href="student_registration.php"><i class="fa fa-circle-o"></i> Student Registration</a></li>   
                     <li><a href="pages/layout/boxed.html"><i class="fa fa-circle-o"></i> Student Search</a></li>
                     <li><a href="pages/layout/fixed.html"><i class="fa fa-circle-o"></i> Books Issue for Students</a></li>
                     <li><a href="pages/layout/collapsed-sidebar.html"><i class="fa fa-circle-o"></i> Books Returning by Student</a></li>
@@ -336,7 +336,7 @@ if (!isset($_SESSION['uid'])) {
                     </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="pages/charts/chartjs.html"><i class="fa fa-circle-o"></i> Teacher Registration</a></li>
+                    <li><a href="teacher_registration.php"><i class="fa fa-circle-o"></i> Teacher Registration</a></li>
                     <li><a href="pages/charts/morris.html"><i class="fa fa-circle-o"></i> Teacher Search</a></li>
                     <li><a href="pages/charts/flot.html"><i class="fa fa-circle-o"></i> Books Issue for Teacher</a></li>
                     <li><a href="pages/layout/collapsed-sidebar.html"><i class="fa fa-circle-o"></i> Books Returning by Teacher</a></li>
@@ -346,24 +346,34 @@ if (!isset($_SESSION['uid'])) {
                 </ul>
             </li>
             <li class="treeview">
-                <a href="books.html">
-                    <i class="fa fa-book"></i>
+                 <a href="#">
+                    <i class="fa fa-user"></i>
                     <span>Books</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
                 </a>
+				<ul class="treeview-menu">
+                    <li><a href="books_book.php"><i class="fa fa-circle-o"></i> Add Books</a></li>
+                    <li><a href="books_author.php"><i class="fa fa-circle-o"></i> Authors</a></li>
+                    <li><a href="books_category.php"><i class="fa fa-circle-o"></i> Categeries</a></li>
+                    <li><a href="books_stream.php"><i class="fa fa-circle-o"></i> Streams</a></li>
+					<li><a href="student_issuebooks.php"><i class="fa fa-circle-o"></i> Borrow Books</a></li>
+				</ul>
             </li>
             <li class="treeview">
                 <a href="#">
-                    <i class="fa fa-globe"></i> <span>Employee</span>
+                    <i class="fa fa-globe"></i> <span>User</span>
                     <span class="pull-right-container">
                         <i class="fa fa-angle-left pull-right"></i>
                     </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="pages/forms/general.html"><i class="fa fa-circle-o"></i> Employee Registration</a></li>
-                    <li><a href="pages/forms/advanced.html"><i class="fa fa-circle-o"></i> Employee Books Transactions</a></li>
-                    <li><a href="pages/forms/advanced.html"><i class="fa fa-circle-o"></i> Employee Logged Details</a></li>
+                    <li><a href="add_user.php"><i class="fa fa-circle-o"></i> User Registration</a></li>
+                    <li><a href="pages/forms/advanced.html"><i class="fa fa-circle-o"></i> User Books Transactions</a></li>
+                    <li><a href="pages/forms/advanced.html"><i class="fa fa-circle-o"></i> User Logged Details</a></li>
                     <li><a href="pages/forms/editors.html"><i class="fa fa-circle-o"></i> User Role Changes</a></li>
-                    <li><a href="pages/forms/advanced.html"><i class="fa fa-circle-o"></i> Canceling User Account</a></li>
+                    <li><a href="pages/forms/advanced.html"><i class="fa fa-circle-o"></i> User Account</a></li>
                 </ul>
             </li>
             <li class="treeview">

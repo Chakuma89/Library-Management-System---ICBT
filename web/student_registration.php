@@ -210,9 +210,9 @@
                                             <tr>
                                                 <td scope="row"><?php echo $uid; ?></td>
                                                 <td><?php echo $fullname; ?></td>
-												<td><?php echo $sgrade; ?></td>
-												<td><?php echo $saddress; ?></td>
-                                                <td><?php echo $semail; ?></td>
+												<td><?php //echo $sgrade; ?></td>
+												<td><?php //echo $saddress; ?></td>
+                                                <td><?php //echo $semail; ?></td>
                                                 <td>
                                                     <a href="add_user.php?editid=<?php echo $uid; ?>">Edit</a> | <a href="add_user.php?deleteid=<?php echo $uid; ?>" onclick="return confirm('Are you sure?');">Delete</a>
                                                 </td>

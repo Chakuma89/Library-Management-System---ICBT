@@ -14,7 +14,7 @@
             <!-------------------------Header----------------------------->
 
             <?php
-            if (isset($_GET['deleteid'])) {   
+            if (isset($_GET['deleteid'])) {
                 $uid = $_GET['deleteid'];
                 $delete = $user->delete($uid);
             }

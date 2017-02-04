@@ -19,13 +19,14 @@
             if (isset($_POST['save'])) {
                 $bookCode = $_POST['book_code'];
                 $bookName = $_POST['book_name'];
+                $bookDes = $_POST['book_des'];
                 $bookAuthor = $_POST['book_author'];
                 $bookQuantity = $_POST['book_quantity'];
                 $bookLanguage = $_POST['book_language'];
                 $bookType = $_POST['book_type'];
                 $bookStream = $_POST['book_stream'];
                 $bookCategory = $_POST['book_category'];
-                $addBook = $book->addBooks($bookCode, $bookName, $bookAuthor, $bookQuantity, $bookLanguage, $bookType, $bookStream, $bookCategory);
+                $addBook = $book->addBooks($bookCode, $bookName, $bookDes, $bookAuthor, $bookQuantity, $bookLanguage, $bookType, $bookStream, $bookCategory);
                 if ($addBook) {
                     // Registration Success
                     $success = 'Book details have been successfully added';
@@ -39,13 +40,14 @@
                 $uid = strip_tags($_POST['uid']);
                 $bookCode = $_POST['book_code'];
                 $bookName = $_POST['book_name'];
+                $bookDes = $_POST['book_des'];
                 $bookAuthor = $_POST['book_author'];
                 $bookQuantity = $_POST['book_quantity'];
                 $bookLanguage = $_POST['book_language'];
                 $bookType = $_POST['book_type'];
                 $bookStream = $_POST['book_stream'];
                 $bookCategory = $_POST['book_category'];
-                $updateBook = $book->updateBook($uid, $bookCode, $bookName, $bookAuthor, $bookQuantity, $bookLanguage, $bookType, $bookStream, $bookCategory);
+                $updateBook = $book->updateBook($uid, $bookCode, $bookName, $bookDes, $bookAuthor, $bookQuantity, $bookLanguage, $bookType, $bookStream, $bookCategory);
 
                 if ($updateBook) {
                     // Registration Success
@@ -69,6 +71,7 @@
                     $uid = $book_id;
                     $bookCode = $book_code;
                     $bookName = $book_name;
+                    $bookDes = $description;
                     $bookAuthorId = $author;
                     $bookQuantity = $quantity;
                     $bookLanguageId = $language;
@@ -84,6 +87,7 @@
             } else {
                 $bookCode = $addBook = $book->getBookCode();
                 $bookName = '';
+                $bookDes = '';
                 $bookAuthorId = '';
                 $bookQuantity = '';
                 $bookLanguageId = '';
@@ -127,13 +131,15 @@
                                 <!-- form start -->
                                 <form action="books_book.php" method="post" class="form-horizontal"> 
                                     <div class="box-body">
+
                                         <div class="form-group">
                                             <label for="b_code" class="col-sm-3 control-label">Book Code</label>
 
                                             <div class="col-sm-9">
                                                 <input type="text" class="form-control" required id="book_code" name="book_code" value="<?php echo $bookCode; ?>" readonly placeholder="Book Code">
                                             </div>
-                                        </div>
+                                        </div>   
+
                                         <div class="form-group">
                                             <label for="b_name" class="col-sm-3 control-label">Book Name</label>
 
@@ -141,6 +147,55 @@
                                                 <input type="text" class="form-control" required id="book_name" name="book_name" value="<?php echo $bookName; ?>" placeholder="Book Name">
                                             </div>
                                         </div>
+
+                                        <div class="form-group">
+                                            <label for="c_cat_name" class="col-sm-3 control-label">Book Description</label>
+                                            <div class="col-sm-9">
+                                                <textarea class="form-control" id="book_des" name="book_des" rows="3" placeholder="Enter Book Description..." ><?php echo $bookDes; ?></textarea>
+                                            </div>  
+                                        </div>
+
+                                        <div class="form-group"> 
+                                            <label for="b_language" class="col-sm-3 control-label">Language</label>
+
+                                            <div class="col-sm-9">
+                                                <select class="form-control select2 select2-hidden-accessible" required id="book_language" name="book_language" onchange="getBookCode()" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                                    <option value="">- Select Language -</option>
+                                                    <?php
+                                                    foreach ($book->showLanguages() as $val) { 
+                                                        extract($val);
+                                                        ?>
+                                                        <?php if ($bookLanguageId == $language_id) { ?>
+                                                            <option selected value="<?php echo $language_id; ?>"><?php echo $language; ?></option> 
+                                                        <?php } else { ?>     
+                                                            <option value="<?php echo $language_id; ?>"><?php echo $language; ?></option>  
+                                                        <?php } ?>
+                                                    <?php } ?>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="b_cat" class="col-sm-3 control-label">Category</label>
+
+                                            <div class="col-sm-9">
+                                                <select class="form-control select2 select2-hidden-accessible" required id="book_category" name="book_category" onchange="getBookCode()" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                                    <option value="">- Select Category -</option>   
+                                                    <?php
+                                                    foreach ($book->showCategories() as $val) {
+                                                        extract($val);
+                                                        ?>
+                                                        <?php if ($bookCategoryId == $category_id) { ?>
+                                                            <option selected="" value="<?php echo $category_id; ?>"><?php echo $category_name; ?></option>
+                                                        <?php } else { ?>
+                                                            <option value="<?php echo $category_id; ?>"><?php echo $category_name; ?></option>
+                                                        <?php } ?>
+
+                                                    <?php } ?>
+                                                </select>
+                                            </div>
+                                        </div>
+
 
 
                                         <div class="form-group">
@@ -171,31 +226,13 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group">
-                                            <label for="b_language" class="col-sm-3 control-label">Language</label>
 
-                                            <div class="col-sm-9">
-                                                <select class="form-control select2 select2-hidden-accessible" required id="book_language" name="book_language" style="width: 100%;" tabindex="-1" aria-hidden="true">
-                                                    <option value="">- Select Language -</option>
-                                                    <?php
-                                                    foreach ($book->showLanguages() as $val) {
-                                                        extract($val);
-                                                        ?>
-                                                        <?php if ($bookAuthorId == $author_id) { ?>
-                                                            <option selected value="<?php echo $language_id; ?>"><?php echo $language; ?></option> 
-                                                        <?php } else { ?>     
-                                                            <option value="<?php echo $language_id; ?>"><?php echo $language; ?></option>  
-                                                        <?php } ?>
-                                                    <?php } ?>
-                                                </select>
-                                            </div>
-                                        </div>
 
                                         <div class="form-group">
                                             <label for="b_type" class="col-sm-3 control-label">Type</label>
 
                                             <div class="col-sm-9" >
-        
+
                                                 <select class="form-control select2 select2-hidden-accessible" required id="book_type" name="book_type" style="width: 100%;" tabindex="-1" aria-hidden="true">
                                                     <option value="">- Select Type -</option>
                                                     <?php
@@ -231,26 +268,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group">
-                                            <label for="b_cat" class="col-sm-3 control-label">Category</label>
 
-                                            <div class="col-sm-9">
-                                                <select class="form-control select2 select2-hidden-accessible" required id="book_category" name="book_category" style="width: 100%;" tabindex="-1" aria-hidden="true">
-                                                    <option value="">- Select Category -</option>   
-                                                    <?php
-                                                    foreach ($book->showCategories() as $val) {
-                                                        extract($val);
-                                                        ?>
-                                                        <?php if ($bookCategoryId == $category_id) { ?>
-                                                            <option selected="" value="<?php echo $category_id; ?>"><?php echo $category_name; ?></option>
-                                                        <?php } else { ?>
-                                                            <option value="<?php echo $category_id; ?>"><?php echo $category_name; ?></option>
-                                                        <?php } ?>
-
-                                                    <?php } ?>
-                                                </select>
-                                            </div>
-                                        </div>
 
                                         <div class="form-group">
                                             <div class="col-sm-offset-3 col-sm-9">
@@ -297,6 +315,7 @@
                                         <tr>
                                             <th>Book Code</th>
                                             <th>Book Name</th>
+                                            <th>Description</th>
                                             <th>Author</th>
                                             <th>Quantity</th>
                                             <th>Language</th>
@@ -314,21 +333,11 @@
                                             $categoryName = $book->getCategoryNameById($category);
                                             $languageName = $book->getCategoryLanguageById($language);
                                             $typeName = $book->getCategoryTypeById($type);
-                                            if ($type == 1) {
-                                                $typeName = 'Only 2 days';
-                                            } elseif ($type == 2) {
-                                                $typeName = 'Only 3 days';
-                                            } elseif ($type == 3) {
-                                                $typeName = 'Only 5 days';
-                                            } elseif ($type == 4) {
-                                                $typeName = 'Only 5 days';
-                                            } else {
-                                                $typeName = 'Only for reading at library';
-                                            }
                                             ?>
                                             <tr>
                                                 <td scope="row"><?php echo $book_code; ?></td>
                                                 <td><?php echo $book_name; ?></td>  
+                                                <td><?php echo $description; ?></td>  
                                                 <td><?php echo $authorName; ?></td>
                                                 <td><?php echo $quantity; ?></td>
                                                 <td><?php echo $languageName; ?></td>
@@ -437,5 +446,42 @@
         <script src="js/demo.js"></script>
 
         <script src="js/pages/books.js"></script>
+
+
+        <script>
+                                                    function getBookCode() {
+                                                        var catID = $('#book_category').val();
+                                                        var lanID = $('#book_language').val();
+                                                        var bookCode = $('#book_code').val();
+                                                        var lastItem = bookCode.split("/").pop(-1);
+                                                        var today = new Date();
+                                                        var year = today.getFullYear();
+
+                                                        if (catID != '' && lanID != '') {
+
+                                                            var lng = $('#book_language').find(":selected").text();
+                                                            var lngCode = lng.substring(0, 3);
+
+                                                            var cat = $('#book_category').find(":selected").text();
+                                                            var categoryCode = cat.substring(0, 3);  
+
+                                                            //var bla = $('#book_category').find(":selected").text();
+                                                            //var matches = bla.match(/\b(\w)/g);
+                                                            // var categoryCode = matches.join('');
+
+                                                            var bookCodeNew = lngCode + '/' + categoryCode + '/' + year + '/' + lastItem;
+                                                            var bookCodeNewUpp = bookCodeNew.toUpperCase();
+                                                            $('#book_code').val(bookCodeNewUpp);
+                                                        } else {
+                                                            var bookCodeNew = year + '/' + lastItem;
+                                                            var bookCodeNewUpp = bookCodeNew.toUpperCase();
+                                                            $('#book_code').val(bookCodeNewUpp);
+                                                        }
+
+
+                                                    }
+        </script>
+
+
     </body>
 </html>
