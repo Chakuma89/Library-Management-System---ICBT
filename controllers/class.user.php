@@ -73,7 +73,7 @@ class user {
     public function check_login($emailusername, $password) {
 
         $password = md5($password);
-        $sql2 = "SELECT fullname from users WHERE (uemail='$emailusername' or uname='$emailusername') and upass='$password'";
+        $sql2 = "SELECT uid, fullname from users WHERE (uemail='$emailusername' or uname='$emailusername') and upass='$password'";
 
         //checking if the username is available in the table
         $result = mysqli_query($this->db, $sql2);
@@ -83,7 +83,8 @@ class user {
         if ($count_row == 1) {
             // this login var will use for the session thing
             $_SESSION['login'] = true;
-            $_SESSION['uid'] = $user_data['fullname'];
+            $_SESSION['uid'] = $user_data['uid'];
+            $_SESSION['uname'] = $user_data['fullname']; 
             return true;
         } else {
             return false;
@@ -92,6 +93,7 @@ class user {
 
     public function user_logout() {
         unset($_SESSION['uid']);
+        unset($_SESSION['uname']);
     }
 
     public function update_user($uid, $name, $username, $password, $email) {

@@ -59,7 +59,7 @@ class book {
         $resultLang = mysqli_query($this->db, $sqlLang);
 
         while ($rowsLang = mysqli_fetch_array($resultLang)) {
-            $this->dataLang[] = $rowsLang; 
+            $this->dataLang[] = $rowsLang;
         }
 
         return $this->dataLang;
@@ -71,13 +71,16 @@ class book {
         $resultType = mysqli_query($this->db, $sqlType);
 
         while ($rowsType = mysqli_fetch_array($resultType)) {
-            $this->dataType[] = $rowsType; 
+            $this->dataType[] = $rowsType;
         }
 
-        return $this->dataType;  
+        return $this->dataType;
     }
 
-    public function addBooks($bookCode, $bookName, $bookAuthor, $bookQuantity, $bookLanguage, $bookType, $bookStream, $bookCategory) {
+    public function addBooks($bookCode, $bookName, $bookDes, $bookAuthor, $bookQuantity, $bookLanguage, $bookType, $bookStream, $bookCategory) {
+
+        $addedDate = $date = date('Y-m-d H:i:s');
+        $addedBy = $_SESSION['uid'];
 
         $sql = "SELECT * FROM books WHERE book_name='$bookName'";
 
@@ -86,8 +89,22 @@ class book {
         $count_row = $check->num_rows;
 
         if ($count_row == 0) {
-            $sql1 = "INSERT INTO books SET book_code='$bookCode', book_name='$bookName', author='$bookAuthor', quantity='$bookQuantity', language='$bookLanguage', type='$bookType', stream='$bookStream', category='$bookCategory'";
+            $sql1 = "INSERT INTO books SET book_code='$bookCode', book_name='$bookName', description='$bookDes', author='$bookAuthor', quantity='$bookQuantity', language='$bookLanguage', type='$bookType', stream='$bookStream', category='$bookCategory', added_date='$addedDate', added_by='$addedBy'";
             $result = mysqli_query($this->db, $sql1) or die(mysqli_connect_errno() . "Data cannot inserted");
+
+            $sqlLast = "SELECT book_id  FROM books ORDER BY book_id DESC LIMIT 1";
+            $resultLast = mysqli_query($this->db, $sqlLast);
+            $data = mysqli_fetch_array($resultLast);
+            $lastBookId = $data['book_id']; 
+
+            for ($x = 1; $x <= $bookQuantity; $x++) {
+                $copySubId= sprintf("%02d", $x);      
+                $bookCopyCode = $bookCode.'/'. $copySubId ;    
+                
+                $sql2 = "INSERT INTO book_copies SET ref_book_id='$lastBookId', book_copy_code='$bookCopyCode', book_copy_status='1'";      
+                $result2 = mysqli_query($this->db, $sql2) or die(mysqli_connect_errno() . "Data cannot inserted");
+            }
+
             return $result;
         } else {
             return false;
@@ -118,7 +135,7 @@ class book {
         return $this->dataSelect;
     }
 
-    public function updateBook($uid, $bookCode, $bookName, $bookAuthor, $bookQuantity, $bookLanguage, $bookType, $bookStream, $bookCategory) {
+    public function updateBook($uid, $bookCode, $bookName, $bookDes, $bookAuthor, $bookQuantity, $bookLanguage, $bookType, $bookStream, $bookCategory) {
 
         $sql = "SELECT * FROM books WHERE book_name='$bookName' AND book_id != '$uid'";
         $check = $this->db->query($sql);
@@ -126,7 +143,7 @@ class book {
 
         //if the data is not in db then insert to the table   
         if ($count_row == 0) {
-            $sql1 = "UPDATE books SET book_code='$bookCode', book_name='$bookName', author='$bookAuthor', quantity='$bookQuantity', language='$bookLanguage', type='$bookType', stream='$bookStream', category='$bookCategory' WHERE book_id='$uid'";
+            $sql1 = "UPDATE books SET book_code='$bookCode', book_name='$bookName', description='$bookDes', author='$bookAuthor', quantity='$bookQuantity', language='$bookLanguage', type='$bookType', stream='$bookStream', category='$bookCategory' WHERE book_id='$uid'";
             $result = mysqli_query($this->db, $sql1) or die(mysqli_connect_errno() . "Data cannot updates");
             return $result;
         } else {
@@ -148,7 +165,8 @@ class book {
         $sql = "SELECT book_id FROM books ORDER BY book_id DESC LIMIT 1";
         $result = mysqli_query($this->db, $sql);
         $rows = mysqli_fetch_array($result);
-        $bookCode = 'BOC' . sprintf("%04d", $rows['book_id']);
+        $bookId = $rows['book_id'] + 1;
+        $bookCode = date("Y") . '/' . sprintf("%04d", $bookId);
         return $bookCode;
     }
 
@@ -178,7 +196,7 @@ class book {
         $categoryName = $rows['category_name'];
         return $categoryName;
     }
-    
+
     public function getCategoryLanguageById($id) {
 
         $sql = "SELECT * FROM languages WHERE language_id='$id'";
@@ -187,7 +205,7 @@ class book {
         $languageName = $rows['language'];
         return $languageName;
     }
-    
+
     public function getCategoryTypeById($id) {
 
         $sql = "SELECT * FROM types WHERE type_id='$id'";
