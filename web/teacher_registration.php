@@ -187,7 +187,7 @@
                                 </div>
                                 <!-- /.box-header -->
                                 <div class="box-body">
-                                    <table class="table table-bordered" id="cat-tbl">
+                                    <table class="table table-bordered" id="teacher-tbl">
                                         <thead>
                                             <tr>
 												<th>No</th>
@@ -262,6 +262,9 @@
                                                         $(function() {
                                                             //Initialize Select2 Elements
                                                             $(".select2").select2();
+															
+															
+															 $("#teacher-tbl").DataTable();
                                                         });
         </script>
         <!-- Bootstrap 3.3.6 -->
@@ -291,6 +294,9 @@
         <script src="plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
         <!-- Slimscroll -->
         <script src="plugins/slimScroll/jquery.slimscroll.min.js"></script>
+		<!-- DataTables -->
+<script src="plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
         <!-- FastClick -->
         <script src="plugins/fastclick/fastclick.js"></script>
         <!-- AdminLTE App -->

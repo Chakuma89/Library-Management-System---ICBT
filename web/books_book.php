@@ -129,7 +129,7 @@
                                 <!-- /.box-header -->
 
                                 <!-- form start -->
-                                <form action="books_book.php" method="post" class="form-horizontal"> 
+                                <form action="books_book.php" method="post" name="addBooksForm" class="form-horizontal"> 
                                     <div class="box-body">
 
                                         <div class="form-group">
@@ -162,7 +162,7 @@
                                                 <select class="form-control select2 select2-hidden-accessible" required id="book_language" name="book_language" onchange="getBookCode()" style="width: 100%;" tabindex="-1" aria-hidden="true">
                                                     <option value="">- Select Language -</option>
                                                     <?php
-                                                    foreach ($book->showLanguages() as $val) { 
+                                                    foreach ($book->showLanguages() as $val) {
                                                         extract($val);
                                                         ?>
                                                         <?php if ($bookLanguageId == $language_id) { ?>
@@ -300,8 +300,7 @@
                             </div>
                             <!-- /.box -->
                         </div>
-                        <?php
-                        ?>
+                        <?php ?>
 
 
                         <div class="col-md-12">
@@ -363,6 +362,18 @@
                                     </ul>
                                 </div>
                             </div>
+
+                            <?php
+                            if (isset($_POST['saveModal'])) {
+                                $cnt = $_POST['noOfCoppies'];
+                                for ($x = 1; $x < $cnt; $x++) {
+                                    $copyId = $_POST['coppyId_' . $x];
+                                    $bookStatusId = $_POST['bookStatus_' . $x];
+                                    $updateBook = $book->updateBookCoppyStatus($copyId, $bookStatusId);
+                                }
+                            }
+                            ?>
+
                             <!-- /.box -->
                         </div>
                         <!-----------------------------------------------Books Page Content------------------------------------->
@@ -397,17 +408,55 @@
         </div>
         <!-- ./wrapper -->
 
+
+        <script>
+            function getBookCode() {
+                var catID = $('#book_category').val();
+                var lanID = $('#book_language').val();
+                var bookCode = $('#book_code').val();
+                var lastItem = bookCode.split("/").pop(-1);
+                var today = new Date();
+                var year = today.getFullYear();
+
+                if (catID != '' && lanID != '') {
+
+                    var lng = $('#book_language').find(":selected").text();
+                    var lngCode = lng.substring(0, 3);
+
+                    var cat = $('#book_category').find(":selected").text();
+                    var categoryCode = cat.substring(0, 3);
+
+                    //var bla = $('#book_category').find(":selected").text();
+                    //var matches = bla.match(/\b(\w)/g);
+                    // var categoryCode = matches.join('');
+
+                    var bookCodeNew = lngCode + '/' + categoryCode + '/' + year + '/' + lastItem;
+                    var bookCodeNewUpp = bookCodeNew.toUpperCase();
+                    $('#book_code').val(bookCodeNewUpp);
+                } else {
+                    var bookCodeNew = year + '/' + lastItem;
+                    var bookCodeNewUpp = bookCodeNew.toUpperCase();
+                    $('#book_code').val(bookCodeNewUpp);
+                }
+
+
+            }
+
+
+        </script>
+
+
         <!-- jQuery 2.2.3 -->
         <script src="plugins/jQuery/jquery-2.2.3.min.js"></script>
         <!-- jQuery UI 1.11.4 -->
         <script src="js/jquery-ui.min.js.js"></script>
         <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
         <script>
-                                                    $.widget.bridge('uibutton', $.ui.button);
-                                                    $(function() {
-                                                        //Initialize Select2 Elements
-                                                        $(".select2").select2();
-                                                    });
+            $.widget.bridge('uibutton', $.ui.button);
+            $(function() {
+                //Initialize Select2 Elements
+                $(".select2").select2();
+            });
         </script>
         <!-- Bootstrap 3.3.6 -->
         <script src="bootstrap/js/bootstrap.min.js"></script>
@@ -448,39 +497,7 @@
         <script src="js/pages/books.js"></script>
 
 
-        <script>
-                                                    function getBookCode() {
-                                                        var catID = $('#book_category').val();
-                                                        var lanID = $('#book_language').val();
-                                                        var bookCode = $('#book_code').val();
-                                                        var lastItem = bookCode.split("/").pop(-1);
-                                                        var today = new Date();
-                                                        var year = today.getFullYear();
 
-                                                        if (catID != '' && lanID != '') {
-
-                                                            var lng = $('#book_language').find(":selected").text();
-                                                            var lngCode = lng.substring(0, 3);
-
-                                                            var cat = $('#book_category').find(":selected").text();
-                                                            var categoryCode = cat.substring(0, 3);  
-
-                                                            //var bla = $('#book_category').find(":selected").text();
-                                                            //var matches = bla.match(/\b(\w)/g);
-                                                            // var categoryCode = matches.join('');
-
-                                                            var bookCodeNew = lngCode + '/' + categoryCode + '/' + year + '/' + lastItem;
-                                                            var bookCodeNewUpp = bookCodeNew.toUpperCase();
-                                                            $('#book_code').val(bookCodeNewUpp);
-                                                        } else {
-                                                            var bookCodeNew = year + '/' + lastItem;
-                                                            var bookCodeNewUpp = bookCodeNew.toUpperCase();
-                                                            $('#book_code').val(bookCodeNewUpp);
-                                                        }
-
-
-                                                    }
-        </script>
 
 
     </body>

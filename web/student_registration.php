@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>    
     <!-------------------------Header Plugins ----------------------------->
-     <title>School Library System | Student Registration</title>
-	<?php include_once 'header_includes.php'; ?>
-	<!-------------------------Header Plugins ----------------------------->
+    <title>School Library System | Student Registration</title>
+    <?php include_once 'header_includes.php'; ?>
+    <!-------------------------Header Plugins ----------------------------->
 
     <body class="hold-transition skin-blue sidebar-mini">
         <div class="wrapper">
@@ -15,57 +15,78 @@
             <!-------------------------Header----------------------------->
 
             <?php
+            include_once '../controllers/class.student.php';
+            $student = new student();
+
+
             if (isset($_GET['deleteid'])) {
                 $sid = $_GET['deleteid'];
-                $delete = $user->delete($sid);
+                $delete = $student->deleteStudent($sid);   
             }
             if (isset($_POST['save'])) {
+                $studentCode = $_POST['studentCode'];
                 $fullname = $_POST['fullname'];
-				$sgrade = $_POST['grade'];
-				$saddress = $_POST['address'];
-                $semail = $_POST['email'];
-                $stelephone = $_POST['telephone'];
-                $register = $user->reg_user($fullname, $uname, $upass, $umail);
+                $sGrade = $_POST['Sgrade'];
+                $sClass = $_POST['Sclass'];
+                $sMedium = $_POST['Smedium'];
+                $sGrade = $_POST['Sgrade'];
+                $sAddress = $_POST['saddress'];
+                $sEmail = $_POST['semail'];
+                $register = $student->addStudent($studentCode, $fullname, $sGrade, $sClass, $sMedium, $sAddress, $sEmail);
                 if ($register) {
                     // Registration Success
-                    $success = 'User details have been successfully added'; 
+                    $success = 'Student details have been successfully added';
                 } else {
                     // Registration Failed
-                    $error = 'Failed! Email or Username already exits please try again';
+                    $error = 'Failed! Student details already exits, please try again';
                 }
             }
 
             if (isset($_GET['editid'])) {
                 $ueditId = $_GET['editid'];
-                foreach ($user->get_userbyid($ueditId) as $val) {
+                foreach ($student->getStudentById($ueditId) as $val) {
                     extract($val);
-                    $nameEdit = $uname;
-                    $fullnameEdit = $fullname;
-                    $emailEdit = $uemail;
+                    $studentId = $student_id;
+                    $studCode = $student_code;
+                    $studGrade = $grade;
+                    $studClass = $class;
+                    $studMedium = $medium;
+                    $studFullName = $full_name;
+                    $studAddress = $address;
+                    $studEmail = $email;
                     $edit_tag = 1;
                 }
             } else {
-                $nameEdit = '';
-                $fullnameEdit = '';
-                $emailEdit = '';
+                $studCode = $student->getStudentCode();
+                $studGrade = '';
+                $studClass = '';
+                $studMedium = '';
+                $studFullName = '';
+                $studAddress = '';;
+                $studEmail = '';
                 $edit_tag = 0;
             }
 
             if (isset($_POST['Update'])) {
-                $fullname = strip_tags($_POST['fullname']);
-                $uname = strip_tags($_POST['Uname']);
-                $umail = strip_tags($_POST['email']);
-                $upass = strip_tags($_POST['password']);
+
+                $studentCode = $_POST['studentCode'];
+                $fullname = $_POST['fullname'];
+                $sGrade = $_POST['Sgrade'];
+                $sClass = $_POST['Sclass'];
+                $sMedium = $_POST['Smedium'];
+                $sGrade = $_POST['Sgrade'];
+                $sAddress = $_POST['saddress'];
+                $sEmail = $_POST['semail'];
                 $uid = strip_tags($_POST['uid']);
 
-                $register = $user->update_user($uid, $fullname, $uname, $upass, $umail);
+                $register = $student->updateStudent($uid, $studentCode, $fullname, $sGrade, $sClass, $sMedium, $sAddress, $sEmail);
 
                 if ($register) {
                     // Registration Success
-                    $success = 'User details have been successfully updated!';
+                    $success = 'Student details have been successfully updated!';
                 } else {
                     // Registration Failed
-                    $error = 'Update Failed. Email or Username already exits please try again';
+                    $error = 'Failed! Student details already exits, please try again';
                 }
             }
             ?> 
@@ -104,53 +125,85 @@
                                 </div>
                                 <!-- /.box-header -->
                                 <!-- form start -->
-                                <form action="add_user.php" method="post" class="form-horizontal">    
+                                <form action="student_registration.php" method="post" class="form-horizontal">    
                                     <div class="box-body">
-                                        
+
+                                        <div class="form-group">
+                                            <label for="c_name" class="col-sm-3 control-label">Student ID</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="studentCode" name="studentCode" required placeholder="Student ID" value="<?php echo $studCode; ?>">
+                                            </div>
+                                        </div>
+
                                         <div class="form-group">
                                             <label for="c_name" class="col-sm-3 control-label">Full Name</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Full Name" value="<?php echo $fullnameEdit; ?>">
+                                                <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Full Name" required value="<?php echo $studFullName; ?>">
                                             </div>
                                         </div>
-                                        
-										<div class="form-group">
+
+                                        <div class="form-group">
                                             <label for="c_code" class="col-sm-3 control-label">Grade</label>
-											<div class="col-sm-9">
-                                                <select class="form-control" required id="Sgrade">
-                                                    <option>Select Grade...</option>
-                                                    <option>6</option>
-                                                    <option>7</option>
-                                                    <option>8</option>
-													<option>9</option>
-                                                    <option>10</option>
-                                                    <option>11</option>
-													<option>12</option>
-													<option>13</option>
+                                            <div class="col-sm-9">
+                                                <select class="form-control" required id="Sgrade" name="Sgrade" onchange="getStudentCode()">
+                                                    <option value="">Select Grade...</option>  
+                                                    <option <?php if ($studGrade == "6") echo 'selected="selected"'; ?> value="6">6</option>
+                                                    <option <?php if ($studGrade == "7") echo 'selected="selected"'; ?> value="7">7</option>
+                                                    <option <?php if ($studGrade == "8") echo 'selected="selected"'; ?> value="8">8</option>
+                                                    <option <?php if ($studGrade == "9") echo 'selected="selected"'; ?> value="9">9</option>
+                                                    <option <?php if ($studGrade == "10") echo 'selected="selected"'; ?> value="10">10</option>
+                                                    <option <?php if ($studGrade == "11") echo 'selected="selected"'; ?> value="11">11</option>
+                                                    <option <?php if ($studGrade == "12M") echo 'selected="selected"'; ?> value="12M">12 - Maths</option>
+                                                    <option <?php if ($studGrade == "13M") echo 'selected="selected"'; ?> value="13M">13 - Maths</option>
+                                                    <option <?php if ($studGrade == "12B") echo 'selected="selected"'; ?> value="12B">12 - Bio Science</option>
+                                                    <option <?php if ($studGrade == "12B") echo 'selected="selected"'; ?> value="13B">13 - Bio Science</option>
+                                                    <option <?php if ($studGrade == "12C") echo 'selected="selected"'; ?> value="12C">12 - Commerce</option>
+                                                    <option <?php if ($studGrade == "12C") echo 'selected="selected"'; ?> value="12C">13 - Commerce</option>
+                                                    <option <?php if ($studGrade == "12A") echo 'selected="selected"'; ?> value="12A">12 - Arts</option>
+                                                    <option <?php if ($studGrade == "12A") echo 'selected="selected"'; ?> value="13A">13 - Arts</option>
                                                 </select>
                                             </div>
                                         </div>
-										
-										<div class="form-group">
+
+
+                                        <div class="form-group">
+                                            <label for="c_code" class="col-sm-3 control-label">Class</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control" required id="Sclass" name="Sclass" onchange="getStudentCode()">
+                                                    <option value="">Select Class...</option>
+                                                    <option <?php if ($studClass == "A") echo 'selected="selected"'; ?> value="A">A</option>
+                                                    <option <?php if ($studClass == "B") echo 'selected="selected"'; ?> value="B">B</option>
+                                                    <option <?php if ($studClass == "C") echo 'selected="selected"'; ?> value="C">C</option>
+                                                    <option <?php if ($studClass == "D") echo 'selected="selected"'; ?> value="D">D</option> 
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="c_code" class="col-sm-3 control-label">Medium</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control" required id="Smedium" name="Smedium" onchange="getStudentCode()" >
+                                                    <option value="">Select Medium...</option>
+                                                    <option <?php if ($studMedium == "Sinhala") echo 'selected="selected"'; ?> value="Sinhala">Sinhala</option>
+                                                    <option <?php if ($studMedium == "English") echo 'selected="selected"'; ?> value="English">English</option>
+                                                    <option <?php if ($studMedium == "Tamil") echo 'selected="selected"'; ?> value="Tamil">Tamil</option>  
+                                                </select>  
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
                                             <label for="c_cat_name" class="col-sm-3 control-label">Address</label>
                                             <div class="col-sm-9">
-                                                <textarea class="form-control" id="saddress" name="saddress" rows="3" placeholder="Enter Student Address..."></textarea>
+                                                <textarea class="form-control" id="saddress" name="saddress" rows="3" placeholder="Enter Student Address..." ><?php echo $studAddress; ?></textarea>
                                             </div>
                                         </div>
-										
-										<div class="form-group">
-                                            <label for="c_name" class="col-sm-3 control-label">Telephone</label>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="stelephone" required name="stelephone" placeholder="Student Home Telephone" value="<?php echo $emailEdit; ?>">
-                                            </div>
-                                        </div>
-										
+
                                         <div class="form-group">
                                             <label for="c_name" class="col-sm-3 control-label">Email</label>
                                             <div class="col-sm-9">
-                                                <input type="email" class="form-control" id="semail" name="semail" placeholder="Email" value="<?php echo $emailEdit; ?>">
+                                                <input type="email" class="form-control" id="semail" name="semail" placeholder="Enter email..." placeholder="Email" value="<?php echo $studEmail; ?>">
                                             </div>
-                                        </div>
+                                        </div>     
 
                                         <div class="form-group">
                                             <div class="col-sm-offset-3 col-sm-9">
@@ -171,7 +224,7 @@
                                                 }
                                                 if ($edit_tag == 1) {
                                                     ?>
-                                                    <input type="hidden" name="uid" class='form-control' required value="<?php echo $uid; ?>" >
+                                                    <input type="hidden" name="uid" class='form-control' required value="<?php echo $studentId; ?>" >
                                                     <span id="show-create-btn"><button type="submit" name="Update" class="btn btn-success">Update Student</button></span>
                                                 <?php } ?>
 
@@ -193,28 +246,55 @@
                                     <table class="table table-bordered" id="cat-tbl">
                                         <thead>
                                             <tr>
-												<th>No</th>
+                                                <th>No</th>
                                                 <th>Full Name</th>
                                                 <th>Grade</th>
+                                                <th>Class</th>
+                                                <th>Medium</th>
                                                 <th>Address</th>
-												<th>Telephone</th>
                                                 <th>Email</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
                                         <?php
-                                        foreach ($user->showData("users") as $val) {
+                                        foreach ($student->showStudents("students") as $val) {
                                             extract($val);
+                                            if ($grade == '12M') {
+                                                $grade = '12 - Maths';
+                                            }
+                                            if ($grade == '13M') {
+                                                $grade = '13 - Maths';
+                                            }
+                                            if ($grade == '12B') {
+                                                $grade = '12 - Bio Science';
+                                            }
+                                            if ($grade == '13B') {
+                                                $grade = '13 - Bio Science';
+                                            }
+                                            if ($grade == '12C') {
+                                                $grade = '12 - Commerce';
+                                            }
+                                            if ($grade == '13C') {
+                                                $grade = '13 - Commerce';
+                                            }
+                                            if ($grade == '12A') {
+                                                $grade = '12 - Arts';
+                                            }
+                                            if ($grade == '13A') {
+                                                $grade = '13 - Arts';
+                                            }
                                             ?>
 
                                             <tr>
-                                                <td scope="row"><?php echo $uid; ?></td>
-                                                <td><?php echo $fullname; ?></td>
-												<td><?php //echo $sgrade; ?></td>
-												<td><?php //echo $saddress; ?></td>
-                                                <td><?php //echo $semail; ?></td>
+                                                <td scope="row"><?php echo $student_code; ?></td>
+                                                <td><?php echo $full_name; ?></td>
+                                                <td><?php echo $grade; ?></td>
+                                                <td><?php echo $class; ?></td>
+                                                <td><?php echo $medium; ?></td>
+                                                <td><?php echo $address; ?></td>
+                                                <td><?php echo $email; ?></td>
                                                 <td>
-                                                    <a href="add_user.php?editid=<?php echo $uid; ?>">Edit</a> | <a href="add_user.php?deleteid=<?php echo $uid; ?>" onclick="return confirm('Are you sure?');">Delete</a>
+                                                    <a href="student_registration.php?editid=<?php echo $student_id; ?>">Edit</a> | <a href="student_registration.php?deleteid=<?php echo $student_id; ?>" onclick="return confirm('Are you sure?');">Delete</a>
                                                 </td>
                                             </tr>
                                         <?php } ?>
@@ -222,7 +302,7 @@
                                 </div>
                                 <!-- /.box-body -->
                                 <div class="box-footer clearfix">
-                                   
+
                                 </div>
                             </div>
                             <!-- /.box -->
@@ -252,17 +332,54 @@
         </div>
         <!-- ./wrapper -->
 
+
+        <script>
+            function getStudentCode() {
+                var gradeId = $('#Sgrade').val();
+                var classID = $('#Sclass').val();
+                var mediumId = $('#Smedium').val();
+                var studentCode = $('#studentCode').val();
+
+                var lastItem = studentCode.substring(studentCode.length - 5);
+
+                if (gradeId != '' && classID != '' && mediumId != '') {  //alert('test');
+                    var size = 3;
+                    var s = "000" + gradeId;
+                    var gradeCode = s.substr(s.length - size);
+
+                    var mcode = $('#Smedium').find(":selected").text();
+                    var mdcode = mcode.substring(0, 3);
+
+
+                    var studentCodeNew = gradeCode + '/' + classID + '/' + mdcode + '/' + lastItem;
+                    var studentCodeNewUpp = studentCodeNew.toUpperCase();
+                    $('#studentCode').val(studentCodeNewUpp);
+                } else {
+                    var studentCodeNew = lastItem;
+                    var studentCodeNewUpp = studentCodeNew.toUpperCase();
+                    $('#studentCode').val(studentCodeNewUpp);
+                }
+
+
+            }
+
+
+        </script>
+
+
+
+
         <!-- jQuery 2.2.3 -->
         <script src="plugins/jQuery/jquery-2.2.3.min.js"></script>
         <!-- jQuery UI 1.11.4 -->
         <script src="js/jquery-ui.min.js.js"></script>
         <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
         <script>
-                                                        $.widget.bridge('uibutton', $.ui.button);
-                                                        $(function() {
-                                                            //Initialize Select2 Elements
-                                                            $(".select2").select2();
-                                                        });
+            $.widget.bridge('uibutton', $.ui.button);
+            $(function() {
+                //Initialize Select2 Elements
+                $(".select2").select2();
+            });
         </script>
         <!-- Bootstrap 3.3.6 -->
         <script src="bootstrap/js/bootstrap.min.js"></script>
