@@ -214,7 +214,37 @@ class book {
         $typeName = $rows['type_name'];
         return $typeName;
     }
+    
+    
+    public function getBookCoppiesByBookID($id) {
 
+        $sqlBookCoppies= "SELECT * FROM book_copies WHERE ref_book_id='$id'";
+        $resultBookCoppies = mysqli_query($this->db, $sqlBookCoppies);
+        $dataBookCoppies = array();     
+        while ($rowsLang = mysqli_fetch_array($resultBookCoppies)) {
+            $dataBookCoppies[] = $rowsLang;
+        }
+        return $dataBookCoppies; 
+    }
+    
+    
+    public function updateBookCoppyStatus($copyId, $bookStatusId) {
+            $sql1 = "UPDATE book_copies SET book_copy_status='$bookStatusId' WHERE book_copy_id='$copyId'";
+            $result = mysqli_query($this->db, $sql1) or die(mysqli_connect_errno() . "Data cannot updates");
+            return $result;  
+    }
+    
+    public function showBookStatus() {
+
+        $sqlStus= "SELECT * FROM book_status";
+        $resultStus = mysqli_query($this->db, $sqlStus);
+        $dataStus = array();
+        while ($rowsStus= mysqli_fetch_array($resultStus)) {
+            $dataStus[] = $rowsStus; 
+        }
+
+        return $dataStus;  
+    }
 }
 
 ?>

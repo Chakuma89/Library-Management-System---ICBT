@@ -66,7 +66,7 @@ class category {
         return $this->dataSelect;
     }
     
-    public function update_category($uid, $catName, $catDescription) {
+    public function update_category($uid, $catName, $catDescription) { 
 
         $sql = "SELECT * FROM book_categories WHERE category_name='$catName' AND category_id != '$uid'";  
         $check = $this->db->query($sql);
