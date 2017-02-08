@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>    
     <!-------------------------Header Plugins ----------------------------->
-    <title>School Library System | Books Issuing for Students</title>
+    <title>School Library System | Borrowing Books by Students</title>
     <?php include_once 'header_includes.php'; ?>
     <!-------------------------Header Plugins ----------------------------->
 
@@ -15,10 +15,109 @@
             <!-------------------------Header----------------------------->
 
             <?php
-            if (isset($_GET['deleteid'])) {
-                $sid = $_GET['deleteid'];
-                $delete = $user->delete($sid);
+            include_once '../controllers/class.student.php';
+            include_once '../controllers/class.book.php';
+            $student = new student();
+            $book = new book();
+
+            $studentId = '';
+            $studCode = '';
+            $studGrade = '';
+            $studClass = '';
+            $studMedium = '';
+            $streamName = '';
+            $languageName = '';
+            $typeName = '';
+            $studFullName = '';
+            $studAddress = '';
+            $studEmail = '';
+            $bookCopyId = '';
+            $bookCode = '';
+            $bookCopyCode = '';
+            $bookName = '';
+            $author = '';
+            $category = '';
+
+
+            if (isset($_GET['newpage'])) {
+                $TrancateTmpTable = $book->truncateTmpTable();
             }
+
+            if (isset($_GET['deleteTmpId'])) {
+                $_POST['selectedStudId'] = $_GET['refStudID'];
+                $delTmpId = $_GET['deleteTmpId'];
+                $deleteTmp = $book->deleteTmpByID($delTmpId);
+            }
+
+            if (isset($_POST['searchStu'])) {
+                $searchText = $_POST['searchText'];
+                $studentData = $student->getStudntByNameORCode($searchText);
+                if (count($studentData) > 0 && $searchText != '') {
+                    foreach ($studentData as $val) {
+                        extract($val);
+                        $studentId = $student_id;
+                        $studCode = $student_code;
+                        $studGrade = $grade;
+                        $studClass = $class;
+                        $studMedium = $medium;
+                        $studFullName = $full_name;
+                        $studAddress = $address;
+                        $studEmail = $email;
+                    }
+                }
+            } elseif (isset($_POST['selectedStudId']) && $_POST['selectedStudId'] != '') {
+                $selectedStudId = $_POST['selectedStudId'];
+                $studentData2 = $student->getStudentById($selectedStudId);
+                if (count($studentData2) > 0) {
+                    foreach ($studentData2 as $val2) {
+                        extract($val2);
+                        $studentId = $student_id;
+                        $studCode = $student_code;
+                        $studGrade = $grade;
+                        $studClass = $class;
+                        $studMedium = $medium;
+                        $studFullName = $full_name;
+                        $studAddress = $address;
+                        $studEmail = $email;
+                    }
+                }
+            }
+
+            if (isset($_POST['searchBook'])) {
+                $searchBookText = $_POST['searchBookText'];
+                $booksData = $book->getBookByNameORCode($searchBookText);
+                if (count($booksData) > 0 && $searchBookText != '') {
+                    foreach ($booksData as $valb) {
+                        extract($valb);
+                        $bookCopyId = $book_copy_id;
+                        $bookCode = $book_code;
+                        $bookCopyCode = $book_copy_code;
+                        $bookName = $book_name;
+                        $author = $book->getAuthorNameById($author);
+                        $category = $book->getCategoryNameById($category);
+                        $streamName = $book->getStreamNameById($stream);
+                        $languageName = $book->getCategoryLanguageById($language);
+                        $typeName = $book->getCategoryTypeById($type);
+                    }
+                }
+            }
+
+            if (isset($_POST['addBook'])) {
+                $vardate = $_POST['selDate'];
+                $datecon = str_replace('/', '-', $vardate);
+                $dbDate = date('Y-m-d', strtotime($datecon));
+
+                $dbStudId = $_POST['selectedStudId'];
+                $dbBookCopyId = $_POST['selBookCopyId'];
+                $dbDate = $dbDate;
+                $addTmoBook = $book->borrowTmpBooks($dbStudId, $dbBookCopyId, $dbDate);
+            }
+
+            if (isset($_POST['issueBook'])) {
+                $issueBook = $book->issueBooks();
+            }
+
+
             if (isset($_POST['save'])) {
                 $fullname = $_POST['fullname'];
                 $sgrade = $_POST['grade'];
@@ -76,12 +175,12 @@
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>
-                        Books Issuing for Students
-                        <small>Student Details Handling</small>
+                        Borrowing Books by Students
+                        <small>Books Borrowing Details..</small>
                     </h1>
                     <ol class="breadcrumb">
-                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                        <li class="active">Student Details Handling</li>
+                        <li><a href="index.php"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li class="active">Borrowing Books by Students</li>
                     </ol>
                 </section>
 
@@ -97,257 +196,351 @@
                     <div class="row">
                         <!-----------------------------------------------Books Issuing for Students Page Content-------------------------------------> 
 
-                        <div class="col-md-12">
-                            <div class="row">
+                        <div class="col-md-12">  
+                            <form action="student_issuebooks.php" name="search" method="post" class="form-horizontal">   
+                                <div class="row">
 
-                                <div class="col-md-3">
+                                    <div class="col-sm-3">
 
-                                    <!-- Profile Image -->
-                                    <div class="box box-primary">
-                                        <div class="box-body box-profile">
-                                            <img class="profile-user-img img-responsive img-circle" src="img/comman/default_user.png" alt="User profile picture">
+                                        <!-- Profile Image -->
+                                        <div class="box box-primary">
+                                            <div class="box-body box-profile">
+                                                <img class="profile-user-img img-responsive img-circle" src="img/comman/default_user.png" alt="User profile picture">
 
-                                            <h3 class="profile-username text-center">Student Name</h3>
+                                                <h3 class="profile-username text-center"><?php echo $studFullName; ?></h3>
 
-                                            <p class="text-muted text-center">Student</p>
+                                                <p class="text-muted text-center">Student</p>
 
-                                            <ul class="list-group list-group-unbordered">
-                                                <li class="list-group-item">
-                                                    <b>Id</b> <a class="pull-right">121212FDF44</a>
-                                                </li>
-                                                <li class="list-group-item">
-                                                    <b>Grade</b> <a class="pull-right">10</a>
-                                                </li>
-                                                <li class="list-group-item">
-                                                    <b>Class</b> <a class="pull-right">B</a>
-                                                </li>
-                                            </ul>
+                                                <ul class="list-group list-group-unbordered">
+                                                    <li class="list-group-item">
+                                                        <b>Id</b> <a class="pull-right"><?php echo $studCode; ?></a>
+                                                    </li>
+                                                    <!--                                                    <li class="list-group-item">
+                                                                                                            <b>Name</b> <a class="pull-right"></a>
+                                                                                                        </li>-->
+                                                    <li class="list-group-item">
+                                                        <b>Grade</b> <a class="pull-right"><?php echo $studGrade; ?></a>
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        <b>Class</b> <a class="pull-right"><?php echo $studClass; ?></a>
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        <b>Medium</b> <a class="pull-right"><?php echo $studMedium; ?></a>
+                                                    </li>
 
-                                            <a href="#studentreg" data-toggle="tab" class="btn btn-primary btn-block"><b>Edit</b></a>
-                                        </div>
-                                        <!-- /.box-body -->
-                                    </div>
-                                    <!-- /.box -->
-                                </div>
-
-
-
-
-
-                                <div class="col-md-9">     
-
-                                    <div class="box box-primary">
-                                        <div class="box-header with-border">
-                                            <h3 class="box-title">Select Student</h3>
-
-                                            <div class="box-tools pull-right">
-                                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                                                <!--<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>-->
+                                                </ul>
+                                                <input type="hidden" name="selectedStudId" value="<?php echo $studentId; ?>" >    
+                                                <a href="#studentreg" data-toggle="tab" class="btn btn-primary btn-block"><b>Edit</b></a>
                                             </div>
+                                            <!-- /.box-body -->
                                         </div>
-                                        <!-- /.box-header -->
-                                        <div class="box-body">
-                                            <div class="row">
-
-                                                <div class="col-sm-12">
-                                                    <div class="input-group input-group-sm">
-                                                        <input class="form-control input-sm" placeholder="Student Id or Name...">
-                                                        <span class="input-group-btn">
-                                                            <button type="button" class="btn btn-info btn-flat"><i class="fa fa-search margin-r-5"></i> Search</button>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- /.row -->
-                                        </div>
-                                        <!-- /.box-body -->
-                                        <div class="box-footer">
-                                            You should enter Student Id or name ...
-                                        </div> 
+                                        <!-- /.box -->
                                     </div>
 
 
-                                    <div class="box box-danger">
-                                        <div class="box-header with-border">
-                                            <h3 class="box-title">Select Books</h3>
 
-                                            <div class="box-tools pull-right">
-                                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                                                <!--<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>-->
-                                            </div>
-                                        </div>
-                                        <!-- /.box-header -->
-                                        <div class="box-body">
-                                            <div class="row">
 
-                                                <div class="col-sm-7">
-                                                    <div class="input-group input-group-sm">
-                                                        <input class="form-control input-sm" placeholder="Book Code or Name...">
-                                                        <span class="input-group-btn">
-                                                            <button type="button" class="btn btn-danger btn-flat"><i class="fa fa-book margin-r-5"></i>Search</button>
-                                                        </span>
-                                                    </div>
+
+                                    <div class="col-sm-9">     
+
+                                        <div class="box box-primary">
+                                            <div class="box-header with-border">
+                                                <h3 class="box-title">Select Student</h3>
+
+                                                <div class="box-tools pull-right">
+                                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                                                 </div>
+                                            </div>
+                                            <!-- /.box-header -->
+                                            <div class="box-body">
+                                                <div class="row">
 
-                                                <div class="col-sm-3">
-                                                    <div class="form-group">
-                                                        <div class="input-group date">
-                                                            <div class="input-group-addon">
-                                                                <i class="fa fa-calendar"></i>
-                                                            </div>
-                                                            <input type="text" class="form-control pull-right" id="datepicker">
+                                                    <div class="col-sm-12">
+                                                        <div class="input-group input-group-sm">
+                                                            <input class="form-control input-sm" name="searchText" id="searchText" placeholder="Student Id or Name...">
+                                                            <span class="input-group-btn">
+                                                                <button type="submit" name="searchStu" class="btn btn-primary btn-flat"><i class="fa fa-search margin-r-5"></i> Search</button>
+                                                            </span>
                                                         </div>
-                                                        <!-- /.input group -->
                                                     </div>
                                                 </div>
+                                                <!-- /.row -->
 
-                                                <div class="col-sm-2">
-                                                    <button type="button" class="btn btn-danger">Add Book</button>
-                                                </div>
+                                            </div>
 
+                                            <?php if (isset($_POST['searchStu']) && $studentId == '') { ?>  
                                                 <div class="col-sm-12">
-                                                    <div class="col-sm-3">
-                                                        <strong><i class="fa fa-book margin-r-5"></i> Book Name</strong>
+                                                    <div class="alert alert-info"> 
+                                                        <i class="glyphicon glyphicon-warning-sign"></i> &nbsp; No Student Found! Please Try Again! 
                                                     </div>
-                                                    <div class="col-sm-9">
-                                                        <p class="text-muted">
-                                                            Gam Peraliya
-                                                        </p>
+                                                </div>
+                                            <?php } ?>
+
+                                            <!-- /.box-body -->
+                                            <div class="box-footer">
+                                                You should enter Student Id or name ...
+                                            </div> 
+                                        </div>
+
+                                        <div class="box box-default">
+                                            <div class="box-header with-border">
+                                                <h3 class="box-title">Select Books</h3>
+
+                                                <div class="box-tools pull-right">
+                                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                                    <!--<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>-->
+                                                </div>
+                                            </div>
+                                            <!-- /.box-header -->
+                                            <div class="box-body">
+                                                <div class="row">
+
+                                                    <div class="col-sm-7">
+                                                        <div class="input-group input-group-sm">
+                                                            <input class="form-control input-sm" name="searchBookText" id="searchBookText" placeholder="Book Code or Name...">
+                                                            <span class="input-group-btn">
+                                                                <button type="submit" class="btn btn-danger btn-flat" name="searchBook" id="searchBook"><i class="fa fa-book margin-r-5"></i>Search</button>
+                                                            </span>
+                                                        </div>
                                                     </div>
 
                                                     <div class="col-sm-3">
-                                                        <strong><i class="fa fa-barcode margin-r-5"></i> Book Code</strong>
-                                                    </div>
-                                                    <div class="col-sm-9">
-                                                        <p class="text-muted">21212121</p>
-                                                    </div>
-
-                                                    <div class="col-sm-3">
-                                                        <strong><i class="fa fa-list margin-r-5"></i> Book Category</strong>
-                                                    </div>
-                                                    <div class="col-sm-9">
-                                                        <p class="text-muted">O/L</p>
+                                                        <div class="form-group">
+                                                            <div class="input-group date">
+                                                                <div class="input-group-addon">
+                                                                    <i class="fa fa-calendar"></i>
+                                                                </div>
+                                                                <input type="text" class="form-control pull-right" id="datepicker"  name="selDate" value="<?php echo date("d/m/Y"); ?>">
+                                                            </div>
+                                                            <!-- /.input group -->
+                                                        </div>
                                                     </div>
 
-                                                    <div class="col-sm-3">
-                                                        <strong><i class="fa fa-user margin-r-5"></i> Book Author</strong>
+                                                    <div class="col-sm-2">
+                                                        <input type="hidden" name="selBookCopyId" id="selBookCopyId" class='form-control' required value="<?php echo $bookCopyId; ?>" >
+                                                        <button type="submit" class="btn btn-danger" name="addBook" id="addBook" >Add Book</button>
                                                     </div>
-                                                    <div class="col-sm-9">
-                                                        <p class="text-muted">Martin W.</p>
-                                                    </div>
+                                                    <?php if (isset($_POST['searchBook']) && $studentId != '') { ?>
 
-                                                    <div class="col-sm-3">
-                                                        <strong><i class="fa fa-exchange margin-r-5"></i> Availability</strong>
-                                                    </div>
-                                                    <div class="col-sm-9">
-                                                        <p>
-                                                            <span class="label label-danger">UI Design</span>
-                                                            <span class="label label-success">Coding</span>
-                                                            <span class="label label-info">Javascript</span>
-                                                            <span class="label label-warning">PHP</span>
-                                                            <span class="label label-primary">Node.js</span>
-                                                        </p>
-                                                    </div>
+                                                        <?php if (isset($_POST['searchBook']) && count($booksData) > 0) { ?>
+
+                                                            <div class="col-sm-12">
+                                                                <div class="col-sm-3">
+                                                                    <strong><i class="fa fa-book margin-r-5"></i> Book Name</strong>
+                                                                </div>
+                                                                <div class="col-sm-9">
+                                                                    <p class="text-muted">
+                                                                        <?php echo $bookName; ?>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-sm-12">
+                                                                <div class="col-sm-3">
+                                                                    <strong><i class="fa fa-barcode margin-r-5"></i> Book Copy Code</strong>
+                                                                </div>
+                                                                <div class="col-sm-9">
+                                                                    <p class="text-muted"><?php echo $bookCopyCode; ?></p>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-sm-12">
+                                                                <div class="col-sm-3">
+                                                                    <strong><i class="fa fa-list margin-r-5"></i> Book Category</strong>
+                                                                </div>
+                                                                <div class="col-sm-9">
+                                                                    <p class="text-muted"><?php echo $category; ?></p>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-sm-12">
+                                                                <div class="col-sm-3">
+                                                                    <strong><i class="fa fa-user margin-r-5"></i> Book Author</strong>
+                                                                </div>
+                                                                <div class="col-sm-9">
+                                                                    <p class="text-muted"><?php echo $author; ?></p>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-sm-12">
+                                                                <div class="col-sm-3">
+                                                                    <strong><i class="fa fa-user margin-r-5"></i>Language</strong>
+                                                                </div>
+                                                                <div class="col-sm-9">
+                                                                    <p class="text-muted"><?php echo $languageName; ?></p>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-sm-12">
+                                                                <div class="col-sm-3">
+                                                                    <strong><i class="fa fa-user margin-r-5"></i>Type</strong>
+                                                                </div>
+                                                                <div class="col-sm-9">
+                                                                    <p class="text-muted"><?php echo $typeName; ?></p>
+                                                                </div>
+                                                            </div>
+
+
+                                                        <?php } else { ?>
+                                                            <div class="col-sm-12">
+                                                                <div class="alert alert-info"> 
+                                                                    <i class="glyphicon glyphicon-warning-sign"></i> &nbsp; No Book Found! Please Try Again!
+                                                                </div>
+                                                            </div>
+
+                                                        <?php } ?>
+                                                    <?php } ?>
+
+                                                    <?php if (isset($_POST['searchBook']) && $studentId == '') { ?>
+                                                        <div class="col-sm-12">
+                                                            <div class="alert alert-info"> 
+                                                                <i class="glyphicon glyphicon-warning-sign"></i> &nbsp; Please Select a Student First!
+                                                            </div>
+                                                        </div>
+                                                    <?php } ?>
+
+
                                                     <div class="col-sm-12">
                                                         <hr>
                                                     </div>
 
-                                                    <div class="col-sm-12">
-                                                        <strong><i class="fa fa-file-text-o margin-r-5"></i> Description</strong>
+                                                    <?php
+                                                    $borrowedBooks = $book->getBorrowedBooks($studentId);
+                                                    if (count($borrowedBooks) > 0) {
+                                                        ?> 
 
-                                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fermentum enim neque.</p>
+                                                        <div class="col-sm-12">
+                                                            <strong><i class="fa fa-file-text-o margin-r-5"></i> Borrowed Books History </strong>
+
+                                                            <div class="col-md-12 table-responsive" style="padding-top: 10px;">
+                                                                <table class="table table-bordered" id="book-issue-tbl">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Book</th>
+                                                                            <th>Book Code</th>
+                                                                            <th>Date From</th>
+                                                                            <th>Date To</th>
+                                                                            <th style="width: 100px;"></th>
+                                                                        </tr>
+                                                                    </thead>
+
+
+                                                                    <?php
+                                                                    foreach ($borrowedBooks as $valbrBok) {
+                                                                        extract($valbrBok);
+                                                                        foreach ($book->getBookByBookCopyId($br_book_copy_id) as $valCopy) {
+                                                                            extract($valCopy);
+                                                                            $brrCopyBookName = $book_name;
+                                                                            $brrCopyBookCode = $book_copy_code;
+                                                                        }
+                                                                        ?>
+                                                                        <tr>
+                                                                            <td scope="row"><?php echo $brrCopyBookCode; ?></td>  
+                                                                            <td><?php echo $brrCopyBookName; ?></td>
+                                                                            <td><?php echo $br_issue_date; ?></td>  
+                                                                            <td><?php echo $br_return_date; ?></td>           
+                                                                            <td>
+                                                                                <a data-toggle="tooltip" title="Receiving Books" class="btn btn-success" href="add_user.php?editid="><span class="glyphicon glyphicon-check"></span></a>
+                                                                                <!--<a class="btn bg-navy" href="student_issuebooks.php?deleteTmpId=<?php //echo $borrow_books_tem_id;         ?>&refStudID=<?php //echo $studentId;         ?>" onclick="return confirm('Are you sure?');"><span class="fa fa-trash"></span></a>-->
+                                                                            </td>
+                                                                        </tr>
+                                                                    <?php } ?>
+
+                                                                </table>
+                                                            </div>
+
+                                                            <div class="col-sm-12">
+                                                                <div class="alert alert-danger">
+                                                                    <i class="glyphicon glyphicon-warning-sign"></i> &nbsp; Select a Student first!
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-sm-12">
+                                                                <div class="alert alert-info"> 
+                                                                    <i class="glyphicon glyphicon-warning-sign"></i> &nbsp; Select a Student first!
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="col-sm-12">
+                                                                <div class="alert alert-warning"> 
+                                                                    <i class="glyphicon glyphicon-warning-sign"></i> &nbsp; Select a Student first!
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    <?php } ?> 
+                                                </div>
+                                                <!-- /.row -->
+                                            </div>
+                                            <!-- /.box-body -->
+
+                                        </div>
+
+
+                                        <div class="box box-primary">
+                                            <div class="box-header with-border">
+                                                <h3 class="box-title">Books Issuing for Students</h3>
+                                            </div>
+                                            <!-- /.box-header -->
+                                            <div class="box-body">
+                                                <table class="table table-bordered" id="book-issue-tbl">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Book Code</th>
+                                                            <th>Book Name</th>
+                                                            <th>Date From</th>
+                                                            <th>Date To</th>
+                                                            <th style="width: 100px;"></th>
+                                                        </tr>
+                                                    </thead>
+
+
+                                                    <?php
+                                                    foreach ($book->getTmpBooks($studentId) as $val) {
+                                                        extract($val);
+                                                        foreach ($book->getBookByBookCopyId($book_copy_id) as $valCopy) {
+                                                            extract($valCopy);
+                                                            $copyBookName = $book_name;
+                                                            $copyBookCode = $book_copy_code;
+                                                        }
+                                                        //$returnDate = $book->getBookRetunDateByCopyID($book_copy_id, $issue_date);    
+                                                        ?>
+                                                        <tr>
+                                                            <td scope="row"><?php echo $copyBookCode; ?></td>  
+                                                            <td><?php echo $copyBookName; ?></td>
+                                                            <td><?php echo $issue_date; ?></td>  
+                                                            <td><?php echo $return_date; ?></td>        
+                                                            <td>
+                                                                <a class="btn bg-navy" href="student_issuebooks.php?deleteTmpId=<?php echo $borrow_books_tem_id; ?>&refStudID=<?php echo $studentId; ?>" onclick="return confirm('Are you sure?');"><span class="fa fa-trash"></span></a>
+                                                            </td>
+                                                        </tr>
+                                                    <?php } ?>
+
+                                                </table>
+
+
+                                                <div class="form-group">
+                                                    <div class="col-sm-12 text-right">
+                                                        <br/>
+                                                        <input type="hidden" name="refStudCode" id="refStudCode" class='form-control' required value="<?php //echo $studCode;                         ?>" >
+                                                        <span id="show-create-btn"><button type="submit" name="issueBook" class="btn btn-primary">Issue Books</button></span>
                                                     </div>
                                                 </div>
 
                                             </div>
-                                            <!-- /.row -->
+                                            <!-- /.box-body -->
+                                            <div class="box-footer clearfix">
+
+                                            </div>
                                         </div>
-                                        <!-- /.box-body -->
-                                        <div class="box-footer">
-                                            You should enter your book code or name ...
-                                        </div> 
-                                    </div>
 
-
-                                </div>
-
-
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-12">
-                            <div class="box box-info">
-                                <div class="box-header with-border">
-                                    <h3 class="box-title">Books Issuing for Students</h3>
-                                </div>
-                                <!-- /.box-header -->
-                                <div class="box-body">
-                                    <table class="table table-bordered" id="cat-tbl">
-                                        <thead>
-                                            <tr>
-                                                <th>No</th>
-                                                <th>Book</th>
-                                                <th>Book Code</th>
-                                                <th>Date From</th>
-                                                <th>Date To</th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <?php
-                                        foreach ($user->showData("users") as $val) {
-                                            extract($val);
-                                            ?>
-
-                                            <tr>
-                                                <td scope="row"><?php echo $uid; ?></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td>Today</td>
-                                                <td></td>
-                                                <td>
-                                                    <a href="add_user.php?editid=<?php echo $uid; ?>">Edit</a> | <a href="add_user.php?deleteid=<?php echo $uid; ?>" onclick="return confirm('Are you sure?');">Delete</a>
-                                                </td>
-                                            </tr>
-                                        <?php } ?>
-                                    </table>
-
-
-                                    <div class="form-group">
-                                        <div class="col-sm-12 text-right">
-                                            <br/>
-                                            <?php if (isset($success)) { ?>
-                                                <div class="alert alert-info">
-                                                    <i class="glyphicon glyphicon-warning-sign"></i> &nbsp; <?php echo $success; ?> !
-                                                </div>
-                                            <?php } ?>
-                                            <?php if (isset($error)) { ?>
-                                                <div class="alert alert-danger">
-                                                    <i class="glyphicon glyphicon-warning-sign"></i> &nbsp; <?php echo $error; ?> !
-                                                </div>
-                                            <?php } ?>
-
-                                            <?php if ($edit_tag == 0) { ?>
-                                                <span id="show-create-btn"><button type="submit" name="save" class="btn btn-success">Issue Books</button></span>
-                                                <?php
-                                            }
-                                            if ($edit_tag == 1) {
-                                                ?>
-                                                <input type="hidden" name="uid" class='form-control' required value="<?php echo $uid; ?>" >
-                                                <span id="show-create-btn"><button type="submit" name="Update" class="btn btn-success">Issue Books</button></span>
-                                            <?php } ?>
-
-                                        </div>
                                     </div>
 
                                 </div>
-                                <!-- /.box-body -->
-                                <div class="box-footer clearfix">
-
-                                </div>
-                            </div>
-                            <!-- /.box -->
+                            </form>
                         </div>
+
+                        <?php
+                        ?>
 
                         <!-----------------------------------------------Books Issuing for Students Page Content------------------------------------->
                     </div>
@@ -415,16 +608,16 @@
         <!-- AdminLTE for demo purposes -->
         <script src="js/demo.js"></script>
         <script>
-                                                        $.widget.bridge('uibutton', $.ui.button);
-                                                        $(function() {
-                                                            //Initialize Select2 Elements
-                                                            $(".select2").select2();
-                                                        });
+                                                                    $.widget.bridge('uibutton', $.ui.button);
+                                                                    $(function() {
+                                                                        //Initialize Select2 Elements
+                                                                        $(".select2").select2();
+                                                                    });
 
-                                                        //Date picker
-                                                        $('#datepicker').datepicker({
-                                                            autoclose: true
-                                                        });
+                                                                    //Date picker
+                                                                    $('#datepicker').datepicker({
+                                                                        autoclose: true
+                                                                    });
         </script>
         <script src="js/pages/books.js"></script>
     </body>

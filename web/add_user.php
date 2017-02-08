@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>    
     <!-------------------------Header Plugins ----------------------------->
+    <title>School Library System | User Registration</title>
     <?php include_once 'header_includes.php'; ?>
     <!-------------------------Header Plugins ----------------------------->
 
@@ -26,7 +27,7 @@
                 $register = $user->reg_user($fullname, $uname, $upass, $umail);
                 if ($register) {
                     // Registration Success
-                    $success = 'User details have been successfully added'; 
+                    $success = 'User details have been successfully added';
                 } else {
                     // Registration Failed
                     $error = 'Failed! Email or Username already exits please try again';
@@ -74,12 +75,12 @@
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>
-                        Books Handling
-                        <small>Books Registration..</small>
+                        User Registration
+                        <small>User Details Handling..</small>
                     </h1>
                     <ol class="breadcrumb">
-                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                        <li class="active">Books Handling</li>
+                        <li><a href="index.php"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li class="active">User Registration</li>
                     </ol>
                 </section>
 
@@ -96,7 +97,7 @@
                         <!-----------------------------------------------Books Page Content-------------------------------------> 
 
                         <div class="col-md-12">                          
-                            <div class="box box-info">
+                            <div class="box box-primary">
                                 <div class="box-header with-border">
                                     <h3 id="set-title" class="box-title">Add New User</h3>
                                 </div>
@@ -143,13 +144,13 @@
                                                 <?php } ?>
 
                                                 <?php if ($edit_tag == 0) { ?>
-                                                    <span id="show-create-btn"><button type="submit" name="save" class="btn btn-success">Add New User</button></span>
+                                                    <span id="show-create-btn"><button type="submit" name="save" class="btn btn-primary">Add New User</button></span>
                                                     <?php
                                                 }
                                                 if ($edit_tag == 1) {
                                                     ?>
                                                     <input type="hidden" name="uid" class='form-control' required value="<?php echo $uid; ?>" >
-                                                    <span id="show-create-btn"><button type="submit" name="Update" class="btn btn-success">Update User</button></span>
+                                                    <span id="show-create-btn"><button type="submit" name="Update" class="btn btn-warning">Update User</button></span>
                                                 <?php } ?>
 
                                             </div>
@@ -163,40 +164,43 @@
                         <div class="col-md-12">
                             <div class="box">
                                 <div class="box-header with-border">
-                                    <h3 class="box-title">Category List </h3>
+                                    <h3 class="box-title">User List </h3>
                                 </div>
                                 <!-- /.box-header -->
                                 <div class="box-body">
-                                    <table class="table table-bordered" id="cat-tbl">
-                                        <thead>
-                                            <tr>
-                                                <th>User ID</th>
-                                                <th>Full Name</th>
-                                                <th>User Name</th>
-                                                <th>Email</th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <?php
-                                        foreach ($user->showData("users") as $val) {
-                                            extract($val);
-                                            ?>
+                                    <div class="col-md-12 table-responsive">
+                                        <table class="table table-bordered" id="user-tbl">
+                                            <thead>
+                                                <tr>
+                                                    <th>User ID</th>
+                                                    <th>Full Name</th>
+                                                    <th>User Name</th>
+                                                    <th>Email</th>
+                                                    <th style="width: 90px;"></th>
+                                                </tr>
+                                            </thead>
+                                            <?php
+                                            foreach ($user->showData("users") as $val) {
+                                                extract($val);
+                                                ?>
 
-                                            <tr>
-                                                <td scope="row"><?php echo $uid; ?></td>
-                                                <td><?php echo $uname; ?></td>
-                                                <td><?php echo $fullname; ?></td>
-                                                <td><?php echo $uemail; ?></td>
-                                                <td>
-                                                    <a href="add_user.php?editid=<?php echo $uid; ?>">Edit</a> | <a href="add_user.php?deleteid=<?php echo $uid; ?>" onclick="return confirm('Are you sure?');">Delete</a>
-                                                </td>
-                                            </tr>
-                                        <?php } ?>
-                                    </table>
+                                                <tr>
+                                                    <td scope="row"><?php echo $uid; ?></td>
+                                                    <td><?php echo $uname; ?></td>
+                                                    <td><?php echo $fullname; ?></td>
+                                                    <td><?php echo $uemail; ?></td>
+                                                    <td>
+                                                        <a class="btn btn-warning" href="add_user.php?editid=<?php echo $uid; ?>"><span class="fa fa-pencil"></span></a>
+                                                        <a class="btn bg-navy" href="add_user.php?deleteid=<?php echo $uid; ?>" onclick="return confirm('Are you sure?');"><span class="fa fa-trash"></span></a>
+                                                    </td>
+                                                </tr>
+                                            <?php } ?>
+                                        </table>
+                                    </div>
                                 </div>
                                 <!-- /.box-body -->
                                 <div class="box-footer clearfix">
-                                   
+
                                 </div>
                             </div>
                             <!-- /.box -->
@@ -219,200 +223,6 @@
             <!-------------------------Footer----------------------------->
 
 
-            <!-------------------------Right Sidebar----------------------------->
-            <!-- Control Sidebar -->
-            <aside class="control-sidebar control-sidebar-dark">
-                <!-- Create the tabs -->
-                <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
-                    <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
-                    <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
-                </ul>
-                <!-- Tab panes -->
-                <div class="tab-content">
-                    <!-- Home tab content -->
-                    <div class="tab-pane" id="control-sidebar-home-tab">
-                        <h3 class="control-sidebar-heading">Recent Activity</h3>
-                        <ul class="control-sidebar-menu">
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <i class="menu-icon fa fa-birthday-cake bg-red"></i>
-
-                                    <div class="menu-info">
-                                        <h4 class="control-sidebar-subheading">Langdon's Birthday</h4>
-
-                                        <p>Will be 23 on April 24th</p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <i class="menu-icon fa fa-user bg-yellow"></i>
-
-                                    <div class="menu-info">
-                                        <h4 class="control-sidebar-subheading">Frodo Updated His Profile</h4>
-
-                                        <p>New phone +1(800)555-1234</p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <i class="menu-icon fa fa-envelope-o bg-light-blue"></i>
-
-                                    <div class="menu-info">
-                                        <h4 class="control-sidebar-subheading">Nora Joined Mailing List</h4>
-
-                                        <p>nora@example.com</p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <i class="menu-icon fa fa-file-code-o bg-green"></i>
-
-                                    <div class="menu-info">
-                                        <h4 class="control-sidebar-subheading">Cron Job 254 Executed</h4>
-
-                                        <p>Execution time 5 seconds</p>
-                                    </div>
-                                </a>
-                            </li>
-                        </ul>
-                        <!-- /.control-sidebar-menu -->
-
-                        <h3 class="control-sidebar-heading">Tasks Progress</h3>
-                        <ul class="control-sidebar-menu">
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <h4 class="control-sidebar-subheading">
-                                        Custom Template Design
-                                        <span class="label label-danger pull-right">70%</span>
-                                    </h4>
-
-                                    <div class="progress progress-xxs">
-                                        <div class="progress-bar progress-bar-danger" style="width: 70%"></div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <h4 class="control-sidebar-subheading">
-                                        Update Resume
-                                        <span class="label label-success pull-right">95%</span>
-                                    </h4>
-
-                                    <div class="progress progress-xxs">
-                                        <div class="progress-bar progress-bar-success" style="width: 95%"></div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <h4 class="control-sidebar-subheading">
-                                        Laravel Integration
-                                        <span class="label label-warning pull-right">50%</span>
-                                    </h4>
-
-                                    <div class="progress progress-xxs">
-                                        <div class="progress-bar progress-bar-warning" style="width: 50%"></div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <h4 class="control-sidebar-subheading">
-                                        Back End Framework
-                                        <span class="label label-primary pull-right">68%</span>
-                                    </h4>
-
-                                    <div class="progress progress-xxs">
-                                        <div class="progress-bar progress-bar-primary" style="width: 68%"></div>
-                                    </div>
-                                </a>
-                            </li>
-                        </ul>
-                        <!-- /.control-sidebar-menu -->
-
-                    </div>
-                    <!-- /.tab-pane -->
-                    <!-- Stats tab content -->
-                    <div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div>
-                    <!-- /.tab-pane -->
-                    <!-- Settings tab content -->
-                    <div class="tab-pane" id="control-sidebar-settings-tab">
-                        <form method="post">
-                            <h3 class="control-sidebar-heading">General Settings</h3>
-
-                            <div class="form-group">
-                                <label class="control-sidebar-subheading">
-                                    Report panel usage
-                                    <input type="checkbox" class="pull-right" checked>
-                                </label>
-
-                                <p>
-                                    Some information about this general settings option
-                                </p>
-                            </div>
-                            <!-- /.form-group -->
-
-                            <div class="form-group">
-                                <label class="control-sidebar-subheading">
-                                    Allow mail redirect
-                                    <input type="checkbox" class="pull-right" checked>
-                                </label>
-
-                                <p>
-                                    Other sets of options are available
-                                </p>
-                            </div>
-                            <!-- /.form-group -->
-
-                            <div class="form-group">
-                                <label class="control-sidebar-subheading">
-                                    Expose author name in posts
-                                    <input type="checkbox" class="pull-right" checked>
-                                </label>
-
-                                <p>
-                                    Allow the user to show his name in blog posts
-                                </p>
-                            </div>
-                            <!-- /.form-group -->
-
-                            <h3 class="control-sidebar-heading">Chat Settings</h3>
-
-                            <div class="form-group">
-                                <label class="control-sidebar-subheading">
-                                    Show me as online
-                                    <input type="checkbox" class="pull-right" checked>
-                                </label>
-                            </div>
-                            <!-- /.form-group -->
-
-                            <div class="form-group">
-                                <label class="control-sidebar-subheading">
-                                    Turn off notifications
-                                    <input type="checkbox" class="pull-right">
-                                </label>
-                            </div>
-                            <!-- /.form-group -->
-
-                            <div class="form-group">
-                                <label class="control-sidebar-subheading">
-                                    Delete chat history
-                                    <a href="javascript:void(0)" class="text-red pull-right"><i class="fa fa-trash-o"></i></a>
-                                </label>
-                            </div>
-                            <!-- /.form-group -->
-                        </form>
-                    </div>
-                    <!-- /.tab-pane -->
-                </div>
-            </aside>
-            <!-- /.control-sidebar -->
-            <!-------------------------Right Sidebar----------------------------->
-
-
             <!-- Add the sidebar's background. This div must be placed
                  immediately after the control sidebar -->
             <div class="control-sidebar-bg"></div>
@@ -429,6 +239,7 @@
                                                         $(function() {
                                                             //Initialize Select2 Elements
                                                             $(".select2").select2();
+                                                            $("#user-tbl").DataTable();
                                                         });
         </script>
         <!-- Bootstrap 3.3.6 -->
@@ -458,6 +269,9 @@
         <script src="plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
         <!-- Slimscroll -->
         <script src="plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- DataTables -->
+        <script src="plugins/datatables/jquery.dataTables.min.js"></script>
+        <script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
         <!-- FastClick -->
         <script src="plugins/fastclick/fastclick.js"></script>
         <!-- AdminLTE App -->

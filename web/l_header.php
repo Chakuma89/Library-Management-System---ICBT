@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once '../controllers/class.user.php'; 
+include_once '../controllers/class.user.php';
 
 $user = new user();
 
@@ -11,7 +11,7 @@ if (isset($_POST['login'])) {
     $login = $user->check_login($umail, $upass);
 
     if ($login) {
-        header("location:books.php");   
+        header("location:books.php");
     } else {
         $error = 'Incorrect UserName or Password!';
     }
@@ -20,11 +20,11 @@ if (isset($_GET['logout'])) {
     $user->user_logout();
     header("location:login.php");
 }
-if (!isset($_SESSION['uid'])) { 
-		header("location:login.php");  
+if (!isset($_SESSION['uid'])) {
+    header("location:login.php");
 }
 ?> 
-	
+
 <header class="main-header">
     <!-- Logo -->
     <a href="index.html" class="logo">
@@ -251,14 +251,14 @@ if (!isset($_SESSION['uid'])) {
                             </p>
                         </li>
                         <!-- Menu Body -->
-                       
+
                         <!-- Menu Footer-->
                         <li class="user-footer">
                             <div class="pull-left">
                                 <a href="#" class="btn btn-default btn-flat">Profile</a>
                             </div>
                             <div class="pull-right">
-								<a href="login.php?logout=true" class="btn btn-default btn-flat"> Sign Out </a>
+                                <a href="login.php?logout=true" class="btn btn-default btn-flat"> Sign Out </a>
                             </div>
                         </li>
                     </ul>
@@ -346,20 +346,20 @@ if (!isset($_SESSION['uid'])) {
                 </ul>
             </li>
             <li class="treeview">
-                 <a href="#">
+                <a href="#">
                     <i class="fa fa-user"></i>
                     <span>Books</span>
                     <span class="pull-right-container">
                         <i class="fa fa-angle-left pull-right"></i>
                     </span>
                 </a>
-				<ul class="treeview-menu">
+                <ul class="treeview-menu">
                     <li><a href="books_book.php"><i class="fa fa-circle-o"></i> Add Books</a></li>
                     <li><a href="books_author.php"><i class="fa fa-circle-o"></i> Authors</a></li>
                     <li><a href="books_category.php"><i class="fa fa-circle-o"></i> Categeries</a></li>
                     <li><a href="books_stream.php"><i class="fa fa-circle-o"></i> Streams</a></li>
-					<li><a href="student_issuebooks.php"><i class="fa fa-circle-o"></i> Borrow Books</a></li>
-				</ul>
+                    <li><a href="student_issuebooks.php?newpage=yes"><i class="fa fa-circle-o"></i> Borrow Books</a></li>  
+                </ul>
             </li>
             <li class="treeview">
                 <a href="#">

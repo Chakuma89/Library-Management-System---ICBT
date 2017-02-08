@@ -107,7 +107,7 @@
                         <small>Books Registration..</small>
                     </h1>
                     <ol class="breadcrumb">
-                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="index.php"><i class="fa fa-dashboard"></i> Home</a></li>
                         <li class="active">Books Handling</li>
                     </ol>
                 </section>
@@ -122,7 +122,7 @@
                         <!-----------------------------------------------Books Page Content-------------------------------------> 
                         <div class="col-md-12">
                             <!-- Horizontal Form -->
-                            <div class="box box-danger">
+                            <div class="box box-primary">
                                 <div class="box-header with-border">
                                     <h3  id="set-title" class="box-title">Add New Book</h3>
                                 </div>
@@ -284,13 +284,13 @@
                                                 <?php } ?>
 
                                                 <?php if ($edit_tag == 0) { ?>
-                                                    <span id="show-create-btn"><button type="submit" name="save" class="btn btn-success"> &nbsp; Add New &nbsp;  </button></span>
+                                                    <span id="show-create-btn"><button type="submit" name="save" class="btn btn-primary"> &nbsp; Add New &nbsp;  </button></span>
                                                     <?php
                                                 }
                                                 if ($edit_tag == 1) {
                                                     ?>
                                                     <input type="hidden" name="uid" class='form-control' required value="<?php echo $uid; ?>" >
-                                                    <span id="show-create-btn"><button type="submit" name="Update" class="btn btn-success">Update</button></span>
+                                                    <span id="show-create-btn"><button type="submit" name="Update" class="btn btn-warning">Update</button></span>
                                                 <?php } ?>
                                             </div>
                                         </div>
@@ -310,57 +310,66 @@
                                 </div>
                                 <!-- /.box-header -->
                                 <div class="box-body">
-                                    <table class="table table-bordered" id="book-tbl">
-                                        <tr>
-                                            <th>Book Code</th>
-                                            <th>Book Name</th>
-                                            <th>Description</th>
-                                            <th>Author</th>
-                                            <th>Quantity</th>
-                                            <th>Language</th>
-                                            <th>Type</th>
-                                            <th>Stream</th>
-                                            <th>Category</th>
-                                            <th></th>
-                                        </tr>
-
-                                        <?php
-                                        foreach ($book->showBooks("books") as $val) {
-                                            extract($val);
-                                            $authorName = $book->getAuthorNameById($author);
-                                            $streamName = $book->getStreamNameById($stream);
-                                            $categoryName = $book->getCategoryNameById($category);
-                                            $languageName = $book->getCategoryLanguageById($language);
-                                            $typeName = $book->getCategoryTypeById($type);
-                                            ?>
-                                            <tr>
-                                                <td scope="row"><?php echo $book_code; ?></td>
-                                                <td><?php echo $book_name; ?></td>  
-                                                <td><?php echo $description; ?></td>  
-                                                <td><?php echo $authorName; ?></td>
-                                                <td><?php echo $quantity; ?></td>
-                                                <td><?php echo $languageName; ?></td>
-                                                <td><?php echo $typeName; ?></td>
-                                                <td><?php echo $streamName; ?></td> 
-                                                <td><?php echo $categoryName; ?></td>    
-                                                <td>
-                                                    <a data-toggle="modal" data-target="#show-book-copies" href="books_modal.php?editid=<?php echo $book_id; ?>" >View Copies</a> | <a>Add Copies</a> | <a href="books_book.php?editid=<?php echo $book_id; ?>">Edit</a> | <a href="books_book.php?deleteid=<?php echo $book_id; ?>" onclick="return confirm('Are you sure?');">Delete</a>
-                                                </td>
-                                            </tr>
-                                        <?php } ?>
-
-                                    </table>
+                                    <div >
+                                        <div class="col-md-12 table-responsive">
+                                            <table class="table table-bordered addedbooklist" id="book-tbl">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Book Code</th>
+                                                        <th>Book Name</th>
+                                                        <!--<th>Description</th>-->
+                                                        <th>Author</th>
+                                                        <th>Quantity</th>
+                                                        <!--<th>Language</th>-->
+                                                        <th>Type</th>
+                                                        <th>Stream</th>
+                                                        <!--<th>Category</th>-->
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                <?php
+                                                foreach ($book->showBooks("books") as $val) {
+                                                    extract($val);
+                                                    $authorName = $book->getAuthorNameById($author);
+                                                    $streamName = $book->getStreamNameById($stream);
+                                                    $categoryName = $book->getCategoryNameById($category);
+                                                    $languageName = $book->getCategoryLanguageById($language);
+                                                    $typeName = $book->getCategoryTypeById($type);
+                                                    ?>
+                                                        <tr>
+                                                            <td scope="row"><?php echo $book_code; ?></td>
+                                                            <td><?php echo $book_name; ?></td>  
+                                                            <!--<td><?php // echo $description; ?></td>-->  
+                                                            <td><?php echo $authorName; ?></td>
+                                                            <td><?php echo $quantity; ?></td>
+                                                            <!--<td><?php // echo $languageName; ?></td>-->
+                                                            <td><?php echo $typeName; ?></td>
+                                                            <td><?php echo $streamName; ?></td> 
+                                                            <!--<td><?php // echo $categoryName; ?></td>-->    
+                                                            <td style="min-width: 180px; width: 180px;">
+                                                                <a data-toggle="tooltip" title="Edit" class="btn btn-warning" href="books_book.php?editid=<?php echo $book_id; ?>"><span class="fa fa-pencil"></span></a>
+                                                                <span data-toggle="tooltip" title="Add Copies"><a class="btn btn-danger"  data-toggle="modal" data-target="#add-book-copies"><span class="fa fa-plus"></span></a></span>
+                                                                <span data-toggle="tooltip" title="Availability of Copies"><a class="btn btn-facebook" data-toggle="modal" data-target="#show-book-copies" href="books_modal.php?editid=<?php echo $book_id; ?>" ><span class="fa fa-copy"></span></a></span>
+                                                                <a data-toggle="tooltip" title="Delete" class="btn bg-navy" href="books_book.php?deleteid=<?php echo $book_id; ?>" onclick="return confirm('Are you sure?');"><span class="fa fa-trash"></span></a>
+                                                            </td>
+                                                        </tr>
+                                                    <?php } ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                                 <!-- /.box-body -->
-                                <div class="box-footer clearfix">
-                                    <ul class="pagination pagination-sm no-margin pull-right">
-                                        <li><a href="#">&laquo;</a></li>
-                                        <li><a href="#">1</a></li>
-                                        <li><a href="#">2</a></li>
-                                        <li><a href="#">3</a></li>
-                                        <li><a href="#">&raquo;</a></li>
-                                    </ul>
-                                </div>
+                                <!--                                <div class="box-footer clearfix">
+                                                                    <ul class="pagination pagination-sm no-margin pull-right">
+                                                                        <li><a href="#">&laquo;</a></li>
+                                                                        <li><a href="#">1</a></li>
+                                                                        <li><a href="#">2</a></li>
+                                                                        <li><a href="#">3</a></li>
+                                                                        <li><a href="#">&raquo;</a></li>
+                                                                    </ul>
+                                                                </div>-->
                             </div>
 
                             <?php
@@ -385,6 +394,7 @@
             </div>
             <!-- /.content-wrapper -->
 
+            <!-----------------------------------------------Modal One - Book Copies Availability------------------------------------->
             <div class="modal modal-primary fade" id="show-book-copies" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -392,6 +402,49 @@
                     </div>
                 </div>
             </div>
+
+            <!-----------------------------------------------Modal Two - Add New Book Copies------------------------------------->
+            <div class="modal" id="add-book-copies" >
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span></button>
+                            <h4 class="modal-title">Add New Book Copies</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label class="col-md-5">Book Name : </label>
+                                    <div class="col-md-7">Gamperaliya</div>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="col-md-5">No of Copies in the System : </label>
+                                    <div class="col-md-7">10</div>
+                                </div>
+                                <div class="col-md-12">
+                                    <br>
+                                </div>
+                                <div class="col-md-12 form-group">
+                                    <label for="book_add_copy" class="col-sm-5 control-label">No of Newly Adding Copies : </label>
+                                    <div class="col-sm-7">
+                                        <input type="number" class="form-control" id="book_add_copy" placeholder="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger">Add Copies</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-----------------------------------------------Modal End------------------------------------->
+
+
             <!-------------------------Footer----------------------------->
             <?php
             include_once 'l_footer.php';
@@ -410,37 +463,37 @@
 
 
         <script>
-            function getBookCode() {
-                var catID = $('#book_category').val();
-                var lanID = $('#book_language').val();
-                var bookCode = $('#book_code').val();
-                var lastItem = bookCode.split("/").pop(-1);
-                var today = new Date();
-                var year = today.getFullYear();
+                                                    function getBookCode() {
+                                                        var catID = $('#book_category').val();
+                                                        var lanID = $('#book_language').val();
+                                                        var bookCode = $('#book_code').val();
+                                                        var lastItem = bookCode.split("/").pop(-1);
+                                                        var today = new Date();
+                                                        var year = today.getFullYear();
 
-                if (catID != '' && lanID != '') {
+                                                        if (catID != '' && lanID != '') {
 
-                    var lng = $('#book_language').find(":selected").text();
-                    var lngCode = lng.substring(0, 3);
+                                                            var lng = $('#book_language').find(":selected").text();
+                                                            var lngCode = lng.substring(0, 3);
 
-                    var cat = $('#book_category').find(":selected").text();
-                    var categoryCode = cat.substring(0, 3);
+                                                            var cat = $('#book_category').find(":selected").text();
+                                                            var categoryCode = cat.substring(0, 3);
 
-                    //var bla = $('#book_category').find(":selected").text();
-                    //var matches = bla.match(/\b(\w)/g);
-                    // var categoryCode = matches.join('');
+                                                            //var bla = $('#book_category').find(":selected").text();
+                                                            //var matches = bla.match(/\b(\w)/g);
+                                                            // var categoryCode = matches.join('');
 
-                    var bookCodeNew = lngCode + '/' + categoryCode + '/' + year + '/' + lastItem;
-                    var bookCodeNewUpp = bookCodeNew.toUpperCase();
-                    $('#book_code').val(bookCodeNewUpp);
-                } else {
-                    var bookCodeNew = year + '/' + lastItem;
-                    var bookCodeNewUpp = bookCodeNew.toUpperCase();
-                    $('#book_code').val(bookCodeNewUpp);
-                }
+                                                            var bookCodeNew = lngCode + '/' + categoryCode + '/' + year + '/' + lastItem;
+                                                            var bookCodeNewUpp = bookCodeNew.toUpperCase();
+                                                            $('#book_code').val(bookCodeNewUpp);
+                                                        } else {
+                                                            var bookCodeNew = year + '/' + lastItem;
+                                                            var bookCodeNewUpp = bookCodeNew.toUpperCase();
+                                                            $('#book_code').val(bookCodeNewUpp);
+                                                        }
 
 
-            }
+                                                    }
 
 
         </script>
@@ -456,6 +509,9 @@
             $(function() {
                 //Initialize Select2 Elements
                 $(".select2").select2();
+
+
+                $(".addedbooklist").DataTable();
             });
         </script>
         <!-- Bootstrap 3.3.6 -->
@@ -485,6 +541,9 @@
         <script src="plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
         <!-- Slimscroll -->
         <script src="plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- DataTables -->
+        <script src="plugins/datatables/jquery.dataTables.min.js"></script>
+        <script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
         <!-- FastClick -->
         <script src="plugins/fastclick/fastclick.js"></script>
         <!-- AdminLTE App -->
@@ -495,10 +554,5 @@
         <script src="js/demo.js"></script>
 
         <script src="js/pages/books.js"></script>
-
-
-
-
-
     </body>
 </html>
