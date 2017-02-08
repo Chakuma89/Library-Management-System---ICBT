@@ -95,13 +95,13 @@ class book {
             $sqlLast = "SELECT book_id  FROM books ORDER BY book_id DESC LIMIT 1";
             $resultLast = mysqli_query($this->db, $sqlLast);
             $data = mysqli_fetch_array($resultLast);
-            $lastBookId = $data['book_id']; 
+            $lastBookId = $data['book_id'];
 
             for ($x = 1; $x <= $bookQuantity; $x++) {
-                $copySubId= sprintf("%02d", $x);      
-                $bookCopyCode = $bookCode.'/'. $copySubId ;    
-                
-                $sql2 = "INSERT INTO book_copies SET ref_book_id='$lastBookId', book_copy_code='$bookCopyCode', book_copy_status='1'";      
+                $copySubId = sprintf("%02d", $x);
+                $bookCopyCode = $bookCode . '/' . $copySubId;
+
+                $sql2 = "INSERT INTO book_copies SET ref_book_id='$lastBookId', book_copy_code='$bookCopyCode', book_copy_status='1'";
                 $result2 = mysqli_query($this->db, $sql2) or die(mysqli_connect_errno() . "Data cannot inserted");
             }
 
@@ -127,12 +127,27 @@ class book {
 
         $sql = "SELECT * FROM books WHERE book_id='$id'";
         $result = mysqli_query($this->db, $sql);
-
+        $dataSelect = array();
         while ($rows = mysqli_fetch_array($result)) {
-            $this->dataSelect[] = $rows;
+            $dataSelect[] = $rows;
         }
 
-        return $this->dataSelect;
+        return $dataSelect;
+    }
+
+    public function getBookByBookCopyId($id) {
+
+        $sql = "SELECT * FROM books b
+                    INNER JOIN book_copies bc ON b.book_id = bc.ref_book_id
+                    WHERE bc.book_copy_id = '$id'";
+
+        $result = mysqli_query($this->db, $sql);
+        $dataSelectBookCopy = array();
+        while ($rows = mysqli_fetch_array($result)) {
+            $dataSelectBookCopy[] = $rows;
+        }
+
+        return $dataSelectBookCopy;
     }
 
     public function updateBook($uid, $bookCode, $bookName, $bookDes, $bookAuthor, $bookQuantity, $bookLanguage, $bookType, $bookStream, $bookCategory) {
@@ -214,37 +229,128 @@ class book {
         $typeName = $rows['type_name'];
         return $typeName;
     }
-    
-    
+
     public function getBookCoppiesByBookID($id) {
 
-        $sqlBookCoppies= "SELECT * FROM book_copies WHERE ref_book_id='$id'";
+        $sqlBookCoppies = "SELECT * FROM book_copies WHERE ref_book_id='$id'";
         $resultBookCoppies = mysqli_query($this->db, $sqlBookCoppies);
-        $dataBookCoppies = array();     
+        $dataBookCoppies = array();
         while ($rowsLang = mysqli_fetch_array($resultBookCoppies)) {
             $dataBookCoppies[] = $rowsLang;
         }
-        return $dataBookCoppies; 
+        return $dataBookCoppies;
     }
-    
-    
+
     public function updateBookCoppyStatus($copyId, $bookStatusId) {
-            $sql1 = "UPDATE book_copies SET book_copy_status='$bookStatusId' WHERE book_copy_id='$copyId'";
-            $result = mysqli_query($this->db, $sql1) or die(mysqli_connect_errno() . "Data cannot updates");
-            return $result;  
+        $sql1 = "UPDATE book_copies SET book_copy_status='$bookStatusId' WHERE book_copy_id='$copyId'";
+        $result = mysqli_query($this->db, $sql1) or die(mysqli_connect_errno() . "Data cannot updates");
+        return $result;
     }
-    
+
     public function showBookStatus() {
 
-        $sqlStus= "SELECT * FROM book_status";
+        $sqlStus = "SELECT * FROM book_status";
         $resultStus = mysqli_query($this->db, $sqlStus);
         $dataStus = array();
-        while ($rowsStus= mysqli_fetch_array($resultStus)) {
-            $dataStus[] = $rowsStus; 
+        while ($rowsStus = mysqli_fetch_array($resultStus)) {
+            $dataStus[] = $rowsStus;
         }
 
-        return $dataStus;  
+        return $dataStus;
     }
+
+    public function getBookByNameORCode($searchBookText) {
+
+        $sql = "SELECT * FROM books b 
+                    INNER JOIN book_copies bc ON b.book_id = bc.ref_book_id 
+                    WHERE (b.book_code= '$searchBookText' OR b.book_name LIKE '%$searchBookText%') AND bc.book_copy_status=1
+                    LIMIT 1;";
+        $result = mysqli_query($this->db, $sql);
+        $dataSelect = array();
+        while ($rows = mysqli_fetch_array($result)) {
+            $dataSelect[] = $rows;
+        }
+        return $dataSelect;
+    }
+
+    public function borrowTmpBooks($dbStudId, $dbBookCopyId, $dbDate) {
+        $returnDate = $this->getBookRetunDateByCopyID($dbBookCopyId, $dbDate);      
+        $sql1 = "INSERT INTO borrow_books_tem SET ref_student_id='$dbStudId', book_copy_id='$dbBookCopyId', issue_date='$dbDate', return_date='$returnDate'";
+        $result = mysqli_query($this->db, $sql1) or die(mysqli_connect_errno() . "Data cannot inserted");
+        return $result;
+    }
+
+    public function getTmpBooks($dbStudId) {
+        $sqlBookTmp = "SELECT * FROM borrow_books_tem WHERE ref_student_id='$dbStudId'";
+        $resultBookTmp = mysqli_query($this->db, $sqlBookTmp);
+        $dataBookTmp = array();
+        while ($rowsTmp = mysqli_fetch_array($resultBookTmp)) {
+            $dataBookTmp[] = $rowsTmp;
+        }
+        return $dataBookTmp;
+    }
+    
+    public function getBorrowedBooks($StudId) {
+        $sqlBookTmp = "SELECT * FROM borrow_books WHERE br_ref_student_id='$StudId' AND return_status=0"; 
+        $resultBookTmp = mysqli_query($this->db, $sqlBookTmp);
+        $dataBookTmp = array();
+        while ($rowsTmp = mysqli_fetch_array($resultBookTmp)) {
+            $dataBookTmp[] = $rowsTmp;
+        }
+        return $dataBookTmp;
+    }
+    
+    
+    public function issueBooks() {
+        $sqlBookTmp1 = "SELECT * FROM borrow_books_tem";
+        $resultBookTmp1 = mysqli_query($this->db, $sqlBookTmp1);
+        $dataBookTmp1 = array();
+        while ($rowsTmp1 = mysqli_fetch_array($resultBookTmp1)) {
+            $brStudId = $rowsTmp1['ref_student_id'];
+            $brBookCopyId = $rowsTmp1['book_copy_id'];
+            $brDate = $rowsTmp1['issue_date'];
+            $brReturnDate = $rowsTmp1['return_date'];
+            $sql22 = "INSERT INTO borrow_books SET br_ref_student_id='$brStudId', br_book_copy_id='$brBookCopyId', br_issue_date='$brDate', br_return_date='$brReturnDate'";  
+            $result22 = mysqli_query($this->db, $sql22) or die(mysqli_connect_errno() . "Data cannot inserted");
+        }
+        $sql33 = "TRUNCATE TABLE borrow_books_tem";
+        $result33 = mysqli_query($this->db, $sql33) or die(mysqli_connect_errno() . "Data cannot be deleted");
+    }
+
+    public function deleteTmpByID($delTmpId) {
+        $sql = "DELETE FROM borrow_books_tem WHERE borrow_books_tem_id='$delTmpId'";
+        $result = mysqli_query($this->db, $sql) or die(mysqli_connect_errno() . "Data cannot be deleted");
+        if ($result) {
+            return $result;
+        }
+    }
+    
+    public function truncateTmpTable() {
+        $sql = "TRUNCATE TABLE borrow_books_tem";
+        $result = mysqli_query($this->db, $sql) or die(mysqli_connect_errno() . "Data cannot be deleted");
+        if ($result) {
+            return $result;
+        }
+    }
+    
+    
+    public function getBookRetunDateByCopyID($id, $issueDate) {
+        $sql = "SELECT * FROM books b
+                    INNER JOIN book_copies bc ON b.book_id = bc.ref_book_id
+                    INNER JOIN types t ON b.type = t.type_id
+                    WHERE bc.book_copy_id = '$id'";
+
+        $result = mysqli_query($this->db, $sql);
+        $rows = mysqli_fetch_array($result);
+        $bookBrrDays = $rows['borrow_days'];
+
+        $issDate = new DateTime($issueDate);
+        $issDate->modify('+'.$bookBrrDays.' day');
+        $returnDate =  $issDate->format('Y-m-d');
+
+        return $returnDate;
+    }
+
 }
 
 ?>

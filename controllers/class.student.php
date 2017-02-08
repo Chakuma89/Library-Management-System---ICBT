@@ -56,18 +56,17 @@ class student {
     public function getStudentById($id) {
 
         $sql = "SELECT * FROM students WHERE student_id='$id'";
-        $result = mysqli_query($this->db, $sql);  
-
+        $result = mysqli_query($this->db, $sql);
+        $dataSelect = array();
         while ($rows = mysqli_fetch_array($result)) {
-            $this->dataSelect[] = $rows;
+            $dataSelect[] = $rows;
         }
-
-        return $this->dataSelect;
+        return $dataSelect;    
     }
-    
-    public function updateStudent($uid, $studentCode, $fullname, $sGrade, $sClass, $sMedium, $sAddress, $sEmail){ 
 
-        $sql = "SELECT * FROM students WHERE student_code='$studentCode' AND student_id != '$uid'";  
+    public function updateStudent($uid, $studentCode, $fullname, $sGrade, $sClass, $sMedium, $sAddress, $sEmail) {
+
+        $sql = "SELECT * FROM students WHERE student_code='$studentCode' AND student_id != '$uid'";
         $check = $this->db->query($sql);
         $count_row = $check->num_rows;
 
@@ -80,9 +79,8 @@ class student {
             return false;
         }
     }
-    
-    
-     public function deleteStudent($id) {
+
+    public function deleteStudent($id) {
 
         $sql = "DELETE FROM students WHERE student_id='$id'";
         $result = mysqli_query($this->db, $sql) or die(mysqli_connect_errno() . "Data cannot be deleted");
@@ -91,7 +89,19 @@ class student {
             return $result;
         }
     }
-    
+
+    public function getStudntByNameORCode($searchText) {
+
+        $sql = "SELECT * FROM students WHERE student_code='$searchText' OR full_name LIKE '%$searchText%' LIMIT 1";  
+        $result = mysqli_query($this->db, $sql);
+        $dataSelect = array();
+        while ($rows = mysqli_fetch_array($result)) {
+            $dataSelect[] = $rows;
+        }
+
+        return $dataSelect;
+    }
+
 }
 
 ?>    
